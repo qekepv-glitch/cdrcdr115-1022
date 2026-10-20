@@ -1,0 +1,2200 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GAS 實戰部署教學網</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* 自訂卷軸樣式 */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    
+    .tab-btn { transition: all 0.3s ease; }
+    .tab-btn:hover { transform: translateY(-2px); shadow: lg; }
+    .tab-btn.active { ring: 4px; ring-offset: 2px; }
+    
+    .fade-in { animation: fadeIn 0.4s ease-in-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+  <!-- 頂部標題區 -->
+  <header class="bg-white shadow-sm mb-8">
+    <div class="max-w-6xl mx-auto px-4 py-5">
+      <!-- 優履團隊 Logo 與版權宣告 -->
+      <div class="flex flex-col md:flex-row items-center justify-center md:justify-start gap-4 mb-5 pb-5 border-b border-gray-100">
+        <img src="https://i.meee.com.tw/nDm9WiU.png" alt="優履團隊 Logo" class="h-12 object-contain">
+        <span class="text-sm font-bold text-slate-600 bg-slate-100/80 px-4 py-1.5 rounded-full border border-slate-200 shadow-sm">
+          優履團隊研發 2026 | 使用請引註
+        </span>
+      </div>
+      
+      <!-- 主標題 -->
+      <div class="text-center md:text-left flex flex-col md:flex-row justify-between items-center">
+        <div>
+          <h1 class="text-3xl font-black text-slate-800 tracking-tight">🚀 GAS 實戰部署教學網</h1>
+          <p class="text-slate-500 mt-2">從基礎到進階，一次學會 Google Apps Script 網頁應用程式</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 flex-grow mb-12">
+    
+    <!-- 四大分頁導覽列 (醒目按鈕設計) -->
+    <nav class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <button onclick="switchTab('tab1', this)" class="tab-btn active bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 px-6 rounded-xl shadow-md flex items-center justify-center gap-2 ring-4 ring-blue-300 ring-offset-2">
+        <span class="text-2xl">📝</span>
+        <span class="text-lg">1. 證書自動產製</span>
+      </button>
+      <button onclick="switchTab('tab2', this)" class="tab-btn bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 px-6 rounded-xl shadow-md flex items-center justify-center gap-2">
+        <span class="text-2xl">🖋️</span>
+        <span class="text-lg">2. 簽名與檔上傳</span>
+      </button>
+      <button onclick="switchTab('tab3', this)" class="tab-btn bg-purple-500 hover:bg-purple-600 text-white font-bold py-4 px-6 rounded-xl shadow-md flex items-center justify-center gap-2">
+        <span class="text-2xl">📊</span>
+        <span class="text-lg">3. 雲端即時看板</span>
+      </button>
+      <button onclick="switchTab('tab4', this)" class="tab-btn bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-6 rounded-xl shadow-md flex items-center justify-center gap-2">
+        <span class="text-2xl">📱</span>
+        <span class="text-lg">4. LINE 連動通知</span>
+      </button>
+    </nav>
+
+    <!-- 分頁 1 內容 -->
+    <div id="tab1" class="tab-content fade-in space-y-8">
+      
+      <!-- 前言 -->
+      <div class="bg-white rounded-2xl shadow-sm p-6 md:p-8 border-l-4 border-blue-500">
+        <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-4 mb-4">
+          <h2 class="text-xl font-bold text-slate-800">為什麼要讓前端即時渲染，並將檔案存在自己的 Google 生態圈？</h2>
+          <div class="flex flex-wrap gap-3">
+            <a href="https://script.google.com/macros/s/AKfycbzx8iw8AKduVLQvfNr7rnM7LODj5cPp7OO9XW1LS2Z-CbsphYu3szoP176XImJX-579/exec" target="_blank" rel="noopener noreferrer" class="shrink-0 whitespace-nowrap bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-bold py-2 px-6 rounded-full shadow-lg transform transition hover:-translate-y-1 flex items-center justify-center gap-2">
+              ✨ 示例1:午餐訂購證明
+            </a>
+            <a href="https://gemini.google.com/share/9fac8d03c018?skid=cfb2c8e9-61c7-441a-a288-58fd9ba81ad7" target="_blank" rel="noopener noreferrer" class="shrink-0 whitespace-nowrap bg-gradient-to-r from-pink-500 to-orange-500 hover:from-pink-600 hover:to-orange-600 text-white font-bold py-2 px-6 rounded-full shadow-lg transform transition hover:-translate-y-1 flex items-center justify-center gap-2">
+              ✨ 示例2:閱讀護照
+            </a>
+          </div>
+        </div>
+        <p class="text-lg leading-relaxed text-slate-700">
+          讓前台具備即時渲染功能（如動態生成證書或收據），能大幅提升使用者的互動體驗，他們無須等待後端處理，即可馬上預覽結果。同時，結合 Google Apps Script (GAS) 的環境變數設定，能將產出的圖檔及資料，安全且自動地歸檔到<strong>您專屬的 Google Drive 資料夾與試算表</strong>中。<br><br>
+          這樣的架構優勢在於：<strong class="text-blue-600">不僅免除第三方平台的使用限制與資安風險，還能讓您 100% 掌握數據擁有權。</strong>以下將帶您了解從 Prompt 設計到完整部署的具體作法！
+        </p>
+      </div>
+
+      <!-- 第一部分：Prompt 分析 -->
+      <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+        <div class="bg-slate-800 px-6 py-4 flex justify-between items-center">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span>📝</span> 第一部分：Prompt 分析
+          </h2>
+          <button id="btn-prompt" onclick="copyText('prompt-text', 'btn-prompt')" class="bg-slate-600 hover:bg-slate-500 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors">
+            📋 一鍵複製
+          </button>
+        </div>
+        <div class="p-6 md:p-8 bg-slate-50">
+          <p class="mb-4 text-slate-600">如果要讓 AI 產出最安全的程式碼，您可以參考這個 Prompt。其中有顏色的部分是您可以自由替換的參數：</p>
+          <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-inner overflow-x-auto mb-6">
+            <pre id="prompt-text" class="text-slate-700 font-mono text-sm whitespace-pre-wrap leading-relaxed">幫我製作一個<span class="bg-yellow-200 px-1 rounded">來賓參加午餐</span>的 Web APP。
+
+# 1. 資安最高指導原則 (絕不 Hardcode)
+* 絕對不要在程式碼中寫死 Google Sheet ID 與 Google Drive Folder ID。
+* 請一律使用 PropertiesService.getScriptProperties() 讀取 SHEET_ID 與 FOLDER_ID。並且在『code.gs』使用寫入的 property 也使用 SHEET_ID 與 FOLDER_ID 一致名稱，避免造成讀取不到。
+
+# 2. 系統功能與介面
+* 表單欄位：<span class="bg-green-200 px-1 rounded">用餐日期、選擇班級、新增班級、來賓代表姓名、用餐人數、收費金額(自動計算：人數*50元)、經手人</span>。
+* 收據繪製：即時渲染明細 (<span class="bg-pink-200 px-1 rounded">代表姓名、人數、金額、經手人、日期</span>)。
+* 按鈕功能：下載 PNG 收據、下載 EXCEL (表單資料)、同步至表單與硬碟 (上傳收據圖檔至雲端並寫入表單)。
+
+# 3. 全自動初始化機制 (getInitialData)
+* 在網頁載入讀取資料 getInitialData 時加入自動偵測：若發現沒有對應的「<span class="bg-blue-200 px-1 rounded">午餐紀錄</span>」與「<span class="bg-blue-200 px-1 rounded">班級列表</span>」分頁，請自動建立分頁、寫入標題欄位，並填入模擬資料。不需要手動進去編輯器按「執行」。
+
+部署程式碼請用 📁 符號標示『code.gs』，前台請用 🧑‍💻 標示『Index』(大寫 I)。</pre>
+          </div>
+
+          <!-- 解析區塊 -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="border border-yellow-300 bg-yellow-50 p-4 rounded-lg">
+              <h4 class="font-bold text-yellow-800 mb-1 flex items-center gap-2"><span class="block w-3 h-3 rounded-full bg-yellow-400"></span> 應用場景設定</h4>
+              <p class="text-sm text-yellow-700">決定整個系統的主題與外觀氛圍。<br><strong>替換例子：</strong>「研習證書發放系統」、「志工時數證明產生器」</p>
+            </div>
+            <div class="border border-green-300 bg-green-50 p-4 rounded-lg">
+              <h4 class="font-bold text-green-800 mb-1 flex items-center gap-2"><span class="block w-3 h-3 rounded-full bg-green-400"></span> 資料收集欄位</h4>
+              <p class="text-sm text-green-700">前端表單需要使用者填寫的資料。<br><strong>替換例子：</strong>「學員姓名、研習主題、課程日期、核發時數」</p>
+            </div>
+            <div class="border border-pink-300 bg-pink-50 p-4 rounded-lg">
+              <h4 class="font-bold text-pink-800 mb-1 flex items-center gap-2"><span class="block w-3 h-3 rounded-full bg-pink-400"></span> 渲染內容設計</h4>
+              <p class="text-sm text-pink-700">要在證書/收據上呈現的文字內容。<br><strong>替換例子：</strong>「學員姓名、研習主題、完成時數」</p>
+            </div>
+            <div class="border border-blue-300 bg-blue-50 p-4 rounded-lg">
+              <h4 class="font-bold text-blue-800 mb-1 flex items-center gap-2"><span class="block w-3 h-3 rounded-full bg-blue-400"></span> 試算表分頁命名</h4>
+              <p class="text-sm text-blue-700">後台儲存資料的試算表分頁名稱。<br><strong>替換例子：</strong>「證書核發紀錄」、「研習名單」</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第二部分：部署步驟與程式碼 -->
+      <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+        <div class="bg-blue-600 px-6 py-4">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span>🚀</span> 第二部分：部署指南（以來賓午餐登記系統為例）
+          </h2>
+        </div>
+        
+        <div class="p-6 md:p-8 space-y-8">
+          <p class="text-slate-700">這套系統完美達成自動化。它會在第一次載入網頁時，自動去您的試算表建好所有資料表！</p>
+
+          <!-- 步驟一 -->
+          <div class="border-l-4 border-amber-400 pl-4">
+            <h3 class="text-lg font-bold text-slate-800 mb-2">步驟一：取得 ID 與設定環境變數保險箱</h3>
+            <ul class="list-disc list-inside text-slate-600 space-y-1">
+              <li>
+                準備一個空白的 Google 試算表，複製網址列的亂碼 ID。
+                <span class="block text-sm text-amber-600 ml-6 mt-1 mb-2">💡 ID 是指網址中「/」到「/」夾著最長的那個字串</span>
+              </li>
+              <li>
+                準備一個Google 雲端硬碟的資料夾 (用來存收據圖檔)，複製網址列的亂碼 ID。
+                <span class="block text-sm text-amber-600 ml-6 mt-1 mb-2">💡 ID 是指網址中「/」到「?」夾著最長的那個字串</span>
+              </li>
+              <li>開啟試算表 ➔ 擴充功能 ➔ Apps Script。</li>
+              <li>點擊左側 ⚙️ 專案設定 ➔ 移至最下方「指令碼屬性」。</li>
+              <li>新增兩個屬性：
+                <ul class="list-circle list-inside ml-6 mt-1 text-slate-500">
+                  <li>屬性填 <code class="bg-slate-100 px-1 rounded text-pink-600">SHEET_ID</code>，值填入試算表 ID。</li>
+                  <li>屬性填 <code class="bg-slate-100 px-1 rounded text-pink-600">FOLDER_ID</code>，值填入資料夾 ID。</li>
+                </ul>
+              </li>
+            </ul>
+            <div class="mt-6 relative inline-block group">
+              <div class="bg-white p-2 rounded-xl border border-slate-200 shadow-sm">
+                <img src="https://i.meee.com.tw/jEEGTvg.png" alt="ID 取得教學圖示" class="max-w-full rounded-lg cursor-pointer transition-opacity hover:opacity-95" style="max-height: 400px;" onclick="openLightbox(this.src)">
+              </div>
+              <button onclick="openLightbox('https://i.meee.com.tw/jEEGTvg.png')" class="absolute bottom-4 right-4 bg-slate-800/80 hover:bg-slate-900 text-white text-sm py-1.5 px-3 rounded-full shadow-lg backdrop-blur-sm flex items-center gap-1 transition-transform hover:scale-105">
+                🔍 放大
+              </button>
+            </div>
+          </div>
+
+          <!-- 步驟二 -->
+          <div>
+            <h3 class="text-lg font-bold text-slate-800 mb-2">步驟二：貼上後端大腦程式碼</h3>
+            <p class="text-slate-600 mb-2"><strong class="text-blue-600">code.gs 的用途：</strong>它是系統的後端大腦，負責處理商業邏輯、讀取環境變數，並作為與 Google 試算表及雲端硬碟溝通的橋樑。</p>
+            
+            <!-- 步驟二教學圖片 -->
+            <div class="mb-4 relative inline-block group">
+              <div class="bg-white p-2 rounded-xl border border-slate-200 shadow-sm">
+                <img src="https://i.meee.com.tw/88Z7fmB.png" alt="步驟二程式碼教學圖示" class="max-w-full rounded-lg cursor-pointer transition-opacity hover:opacity-95" style="max-height: 400px;" onclick="openLightbox(this.src)">
+              </div>
+              <button onclick="openLightbox('https://i.meee.com.tw/88Z7fmB.png')" class="absolute bottom-4 right-4 bg-slate-800/80 hover:bg-slate-900 text-white text-sm py-1.5 px-3 rounded-full shadow-lg backdrop-blur-sm flex items-center gap-1 transition-transform hover:scale-105">
+                🔍 放大
+              </button>
+            </div>
+
+            <p class="text-slate-600 mb-3">以下為<strong>以來賓午餐登記系統為例</strong>，請將 Apps Script 預設的程式碼清空，貼上以下內容：</p>
+            
+            <div class="relative rounded-xl overflow-hidden bg-slate-900 shadow-lg">
+              <div class="flex justify-between items-center px-4 py-2 bg-slate-800 border-b border-slate-700">
+                <div class="flex items-center gap-3">
+                  <span class="text-slate-300 font-mono text-sm">📁 code.gs</span>
+                  <button onclick="toggleCode('gs-code-container')" class="text-blue-400 hover:text-blue-300 text-xs px-2 py-1 rounded border border-blue-500/50 hover:bg-blue-900/30 transition-colors">展開 / 收合程式碼</button>
+                </div>
+                <button id="btn-gs" onclick="copyText('gs-code', 'btn-gs')" class="text-slate-300 hover:text-white bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-xs transition-colors">
+                  📋 複製程式碼
+                </button>
+              </div>
+              <div id="gs-code-container" class="hidden p-4 overflow-x-auto">
+                <pre id="gs-code" class="text-green-400 font-mono text-sm leading-relaxed whitespace-pre">const properties = PropertiesService.getScriptProperties();
+const SHEET_ID = properties.getProperty("SHEET_ID");
+const FOLDER_ID = properties.getProperty("FOLDER_ID");
+
+function doGet() {
+  return HtmlService.createHtmlOutputFromFile('Index')
+    .setTitle('來賓午餐登記與收據系統')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1');
+}
+
+// 網頁載入時觸發：自動建置資料表與回傳初始資料
+function getInitialData() {
+  if (!SHEET_ID || !FOLDER_ID) {
+    return { error: "系統錯誤：請先至 GAS 後台設定 SHEET_ID 與 FOLDER_ID" };
+  }
+
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  
+  // 1. 自動建置班級列表
+  let classSheet = ss.getSheetByName("班級列表");
+  if (!classSheet) {
+    classSheet = ss.insertSheet("班級列表");
+    classSheet.appendRow(["班級名稱"]);
+    classSheet.appendRow(["1638班"]); // 模擬資料
+    classSheet.appendRow(["1663班"]); // 模擬資料
+  }
+
+  // 2. 自動建置午餐紀錄表
+  let recordSheet = ss.getSheetByName("午餐紀錄");
+  if (!recordSheet) {
+    recordSheet = ss.insertSheet("午餐紀錄");
+    recordSheet.appendRow(["時間印記", "用餐日期", "班級", "來賓代表", "人數", "金額", "經手人", "雲端收據連結"]);
+  }
+
+  // 取得班級選單資料
+  const lastRow = classSheet.getLastRow();
+  let classes = [];
+  if (lastRow > 1) {
+    classes = classSheet.getRange(2, 1, lastRow - 1, 1).getValues().flat().filter(String);
+  }
+
+  return { 
+    classes: classes, 
+    sheetId: SHEET_ID 
+  };
+}
+
+// 接收前端資料：同步至表單與硬碟
+function saveData(data) {
+  try {
+    const ss = SpreadsheetApp.openById(SHEET_ID);
+    const recordSheet = ss.getSheetByName("午餐紀錄");
+    
+    // 如果有新增班級，自動寫入班級列表
+    if (data.isNewClass) {
+      const classSheet = ss.getSheetByName("班級列表");
+      classSheet.appendRow([data.className]);
+    }
+
+    let fileUrl = "";
+    // 將 Base64 圖片轉檔並存入 Google Drive
+    if (data.receiptImage) {
+      const folder = DriveApp.getFolderById(FOLDER_ID);
+      const base64Data = data.receiptImage.split(",")[1];
+      const blob = Utilities.newBlob(Utilities.base64Decode(base64Data), "image/png", `${data.date}_${data.repName}_午餐收據.png`);
+      const file = folder.createFile(blob);
+      fileUrl = file.getUrl();
+    }
+
+    // 寫入試算表
+    recordSheet.appendRow([
+      new Date(), data.date, data.className, data.repName, data.pax, data.amount, data.handler, fileUrl
+    ]);
+
+    return { success: true };
+  } catch (error) {
+    return { success: false, message: error.toString() };
+  }
+}</pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- 步驟三 -->
+          <div>
+            <h3 class="text-lg font-bold text-slate-800 mb-2">步驟三：建立前端互動網頁</h3>
+            <p class="text-slate-600 mb-1"><strong class="text-blue-600">Index.html 的功能：</strong>負責網頁的前端使用者介面 (UI)，處理表單資料的輸入、運用 HTML2Canvas 套件進行即時畫面的渲染與截圖，以及將資料打包傳送給後端。</p>
+            <p class="text-slate-600 mb-3">以下為<strong>以來賓午餐登記系統為例</strong>，在左側點擊 <code class="bg-slate-100 px-1 rounded">+ ➔ HTML</code>，命名為 <strong class="text-pink-600">Index</strong> (大寫 I)，清空預設內容並貼上：</p>
+            
+            <div class="relative rounded-xl overflow-hidden bg-slate-900 shadow-lg">
+              <div class="flex justify-between items-center px-4 py-2 bg-slate-800 border-b border-slate-700">
+                <div class="flex items-center gap-3">
+                  <span class="text-slate-300 font-mono text-sm">🧑‍💻 Index.html</span>
+                  <button onclick="toggleCode('html-code-container')" class="text-blue-400 hover:text-blue-300 text-xs px-2 py-1 rounded border border-blue-500/50 hover:bg-blue-900/30 transition-colors">展開 / 收合程式碼</button>
+                </div>
+                <button id="btn-html" onclick="copyText('html-code', 'btn-html')" class="text-slate-300 hover:text-white bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-xs transition-colors">
+                  📋 複製程式碼
+                </button>
+              </div>
+              <div id="html-code-container" class="hidden p-4 overflow-x-auto">
+                <pre id="html-code" class="text-blue-300 font-mono text-sm leading-relaxed whitespace-pre">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+  &lt;base target="_top"&gt;
+  &lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;
+  &lt;!-- 引入 html2canvas 負責將收據轉為圖片 --&gt;
+  &lt;script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"&gt;&lt;/script&gt;
+  &lt;style&gt;
+    .receipt-paper {
+      background: #fff;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+      border-top: 8px solid #3b82f6;
+      background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body class="bg-gray-100 min-h-screen p-4 md:p-8 font-sans"&gt;
+  
+  &lt;div id="loading" class="fixed inset-0 bg-white bg-opacity-90 z-50 flex items-center justify-center flex-col"&gt;
+    &lt;div class="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mb-4"&gt;&lt;/div&gt;
+    &lt;h2 class="text-xl font-bold text-gray-700"&gt;系統初始化中，請稍候...&lt;/h2&gt;
+  &lt;/div&gt;
+
+  &lt;div class="max-w-5xl mx-auto flex flex-col md:flex-row gap-8 hidden" id="main-content"&gt;
+    
+    &lt;!-- 左側：資料輸入表單 --&gt;
+    &lt;div class="w-full md:w-1/2 bg-white rounded-xl shadow-lg p-6"&gt;
+      &lt;h2 class="text-2xl font-bold text-gray-800 border-b pb-3 mb-4"&gt;🍽️ 來賓午餐登記表&lt;/h2&gt;
+      &lt;form id="lunchForm" class="space-y-4"&gt;
+        
+        &lt;div&gt;
+          &lt;label class="block text-sm font-bold text-gray-700 mb-1"&gt;用餐日期&lt;/label&gt;
+          &lt;input type="date" id="date" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required onchange="updateReceipt()"&gt;
+        &lt;/div&gt;
+
+        &lt;div&gt;
+          &lt;label class="block text-sm font-bold text-gray-700 mb-1"&gt;班級選擇&lt;/label&gt;
+          &lt;select id="classSelect" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 mb-2" onchange="handleClassChange()"&gt;
+            &lt;!-- 動態載入 --&gt;
+          &lt;/select&gt;
+          &lt;input type="text" id="newClassInput" placeholder="請輸入新班級名稱" class="w-full px-3 py-2 border rounded-lg hidden" onkeyup="updateReceipt()"&gt;
+        &lt;/div&gt;
+
+        &lt;div&gt;
+          &lt;label class="block text-sm font-bold text-gray-700 mb-1"&gt;來賓代表姓名&lt;/label&gt;
+          &lt;input type="text" id="repName" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required onkeyup="updateReceipt()"&gt;
+        &lt;/div&gt;
+
+        &lt;div class="flex gap-4"&gt;
+          &lt;div class="w-1/2"&gt;
+            &lt;label class="block text-sm font-bold text-gray-700 mb-1"&gt;參與人數&lt;/label&gt;
+            &lt;input type="number" id="pax" min="1" value="1" class="w-full px-3 py-2 border rounded-lg" required onchange="calculateAmount()" onkeyup="calculateAmount()"&gt;
+          &lt;/div&gt;
+          &lt;div class="w-1/2"&gt;
+            &lt;label class="block text-sm font-bold text-gray-700 mb-1"&gt;總金額 (每人50元)&lt;/label&gt;
+            &lt;input type="number" id="amount" class="w-full px-3 py-2 border rounded-lg bg-gray-100 text-red-600 font-bold" readonly&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;div&gt;
+          &lt;label class="block text-sm font-bold text-gray-700 mb-1"&gt;經手人&lt;/label&gt;
+          &lt;input type="text" id="handler" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required onkeyup="updateReceipt()"&gt;
+        &lt;/div&gt;
+      &lt;/form&gt;
+
+      &lt;div class="mt-6 flex flex-wrap gap-3 border-t pt-4"&gt;
+        &lt;button onclick="downloadExcel()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg flex-1"&gt;
+          📊 下載 EXCEL
+        &lt;/button&gt;
+        &lt;button onclick="syncData()" id="syncBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg flex-1 shadow-lg"&gt;
+          ☁️ 同步至表單與硬碟
+        &lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- 右側：收據即時渲染預覽區 --&gt;
+    &lt;div class="w-full md:w-1/2 flex flex-col items-center"&gt;
+      &lt;h2 class="text-xl font-bold text-gray-600 mb-4"&gt;🧾 收據即時預覽&lt;/h2&gt;
+      
+      &lt;!-- 要截圖的收據本體 --&gt;
+      &lt;div id="receipt-box" class="receipt-paper w-full max-w-sm p-8 rounded"&gt;
+        &lt;div class="text-center mb-6"&gt;
+          &lt;h3 class="text-2xl font-black text-gray-800"&gt;午餐費代收證明&lt;/h3&gt;
+          &lt;p class="text-gray-500 text-sm mt-1" id="r-date"&gt;YYYY-MM-DD&lt;/p&gt;
+        &lt;/div&gt;
+        
+        &lt;div class="space-y-4 text-gray-700"&gt;
+          &lt;div class="flex justify-between border-b border-dashed pb-2"&gt;
+            &lt;span class="font-bold"&gt;來賓代表：&lt;/span&gt;
+            &lt;span id="r-name" class="font-medium"&gt;-&lt;/span&gt;
+          &lt;/div&gt;
+          &lt;div class="flex justify-between border-b border-dashed pb-2"&gt;
+            &lt;span class="font-bold"&gt;班級/單位：&lt;/span&gt;
+            &lt;span id="r-class" class="font-medium"&gt;-&lt;/span&gt;
+          &lt;/div&gt;
+          &lt;div class="flex justify-between border-b border-dashed pb-2"&gt;
+            &lt;span class="font-bold"&gt;用餐人數：&lt;/span&gt;
+            &lt;span id="r-pax" class="font-medium"&gt;0 人&lt;/span&gt;
+          &lt;/div&gt;
+          &lt;div class="flex justify-between border-b border-gray-400 pb-2 mt-4"&gt;
+            &lt;span class="font-bold text-lg"&gt;繳交總額：&lt;/span&gt;
+            &lt;span id="r-amount" class="font-bold text-xl text-red-600"&gt;NT$ 0&lt;/span&gt;
+          &lt;/div&gt;
+          &lt;div class="text-right mt-6"&gt;
+            &lt;span class="text-sm text-gray-500"&gt;經手人：&lt;/span&gt;
+            &lt;span id="r-handler" class="font-bold underline tracking-widest pl-2"&gt;-&lt;/span&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;button onclick="downloadPNG()" class="mt-6 bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-6 rounded-full shadow-lg"&gt;
+        🖼️ 下載收據 PNG 檔
+      &lt;/button&gt;
+    &lt;/div&gt;
+
+  &lt;/div&gt;
+
+  &lt;script&gt;
+    let globalSheetId = "";
+
+    // 頁面載入時自動取得資料並初始化表單
+    window.onload = function() {
+      // 設定日期預設為今天
+      document.getElementById('date').valueAsDate = new Date();
+      
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (response.error) {
+            alert(response.error);
+            return;
+          }
+          globalSheetId = response.sheetId;
+          const select = document.getElementById('classSelect');
+          select.innerHTML = '&lt;option value=""&gt;請選擇班級...&lt;/option&gt;';
+          response.classes.forEach(c =&gt; {
+            select.innerHTML += `&lt;option value="${c}"&gt;${c}&lt;/option&gt;`;
+          });
+          select.innerHTML += '&lt;option value="new"&gt;➕ 新增其他班級&lt;/option&gt;';
+          
+          calculateAmount();
+          document.getElementById('loading').classList.add('hidden');
+          document.getElementById('main-content').classList.remove('hidden');
+        })
+        .getInitialData();
+    };
+
+    // 處理下拉選單切換至「新增班級」
+    function handleClassChange() {
+      const select = document.getElementById('classSelect');
+      const input = document.getElementById('newClassInput');
+      if (select.value === 'new') {
+        input.classList.remove('hidden');
+        input.focus();
+      } else {
+        input.classList.add('hidden');
+      }
+      updateReceipt();
+    }
+
+    // 計算總金額並觸發渲染
+    function calculateAmount() {
+      const pax = document.getElementById('pax').value || 0;
+      document.getElementById('amount').value = pax * 50;
+      updateReceipt();
+    }
+
+    // 即時渲染收據內容
+    function updateReceipt() {
+      document.getElementById('r-date').innerText = document.getElementById('date').value || "YYYY-MM-DD";
+      document.getElementById('r-name').innerText = document.getElementById('repName').value || "-";
+      document.getElementById('r-pax').innerText = (document.getElementById('pax').value || "0") + " 人";
+      document.getElementById('r-amount').innerText = "NT$ " + (document.getElementById('amount').value || "0");
+      document.getElementById('r-handler').innerText = document.getElementById('handler').value || "-";
+      
+      const selectVal = document.getElementById('classSelect').value;
+      if (selectVal === 'new') {
+        document.getElementById('r-class').innerText = document.getElementById('newClassInput').value || "-";
+      } else {
+        document.getElementById('r-class').innerText = selectVal || "-";
+      }
+    }
+
+    // 下載 PNG 收據
+    function downloadPNG() {
+      const receipt = document.getElementById('receipt-box');
+      html2canvas(receipt, { scale: 2 }).then(canvas =&gt; {
+        const link = document.createElement('a');
+        const name = document.getElementById('repName').value || "來賓";
+        link.download = `午餐收據_${name}.png`;
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+      });
+    }
+
+    // 下載試算表 Excel
+    function downloadExcel() {
+      if(!globalSheetId) { alert("尚未取得試算表資訊"); return; }
+      const url = `https://docs.google.com/spreadsheets/d/${globalSheetId}/export?format=xlsx`;
+      window.open(url, '_blank');
+    }
+
+    // 同步資料至表單與硬碟
+    function syncData() {
+      const form = document.getElementById('lunchForm');
+      if (!form.checkValidity()) {
+        alert("請確認所有必填欄位皆已填寫！");
+        return;
+      }
+
+      const btn = document.getElementById('syncBtn');
+      btn.innerText = "⏳ 處理上傳中...";
+      btn.disabled = true;
+
+      const selectVal = document.getElementById('classSelect').value;
+      const isNewClass = selectVal === 'new';
+      const finalClass = isNewClass ? document.getElementById('newClassInput').value : selectVal;
+
+      const formData = {
+        date: document.getElementById('date').value,
+        className: finalClass,
+        isNewClass: isNewClass,
+        repName: document.getElementById('repName').value,
+        pax: document.getElementById('pax').value,
+        amount: document.getElementById('amount').value,
+        handler: document.getElementById('handler').value,
+        receiptImage: ""
+      };
+
+      // 先將收據轉為圖片 Base64，再傳給後端
+      const receipt = document.getElementById('receipt-box');
+      html2canvas(receipt, { scale: 1.5 }).then(canvas =&gt; {
+        formData.receiptImage = canvas.toDataURL("image/png");
+        
+        google.script.run
+          .withSuccessHandler(function(res) {
+            btn.innerText = "☁️ 同步至表單與硬碟";
+            btn.disabled = false;
+            if (res.success) {
+              alert("✅ 資料與收據已成功同步至雲端！");
+              form.reset();
+              document.getElementById('date').valueAsDate = new Date();
+              handleClassChange();
+              calculateAmount();
+            } else {
+              alert("❌ 同步失敗：" + res.message);
+            }
+          })
+          .saveData(formData);
+      });
+    }
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- 步驟四 -->
+          <div class="border-l-4 border-indigo-400 pl-4 bg-indigo-50/50 p-4 rounded-r-xl">
+            <h3 class="text-lg font-bold text-slate-800 mb-2">步驟四：發布部署</h3>
+            <ul class="list-decimal list-inside text-slate-700 space-y-2">
+              <li>點擊右上角「部署」 ➔ 「新增部署」。</li>
+              <li>類型選擇「網頁應用程式」。</li>
+              <li>執行身分選「我」，權限選「所有人」。</li>
+              <li>部署後，開啟網址。<br><span class="text-indigo-600 font-bold ml-6 mt-1 block">✨ 此時系統會自動執行 getInitialData，並在背景瞬間幫您把試算表的分頁與格式全數建置完畢！</span></li>
+            </ul>
+            
+            <!-- 步驟四教學圖片 -->
+            <div class="mt-4 relative inline-block group">
+              <div class="bg-white p-2 rounded-xl border border-slate-200 shadow-sm">
+                <img src="https://i.meee.com.tw/EoG9AiH.png" alt="發布部署教學圖示" class="max-w-full rounded-lg cursor-pointer transition-opacity hover:opacity-95" style="max-height: 400px;" onclick="openLightbox(this.src)">
+              </div>
+              <button onclick="openLightbox('https://i.meee.com.tw/EoG9AiH.png')" class="absolute bottom-4 right-4 bg-slate-800/80 hover:bg-slate-900 text-white text-sm py-1.5 px-3 rounded-full shadow-lg backdrop-blur-sm flex items-center gap-1 transition-transform hover:scale-105">
+                🔍 放大
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- 分頁 2 內容 -->
+    <div id="tab2" class="tab-content hidden fade-in space-y-8">
+      
+      <!-- 前言 -->
+      <div class="bg-white rounded-2xl shadow-sm p-6 md:p-8 border-l-4 border-emerald-500">
+        <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-4 mb-4">
+          <h2 class="text-xl font-bold text-slate-800">為什麼需要「檔案上傳、簽名」與「動態開關」？</h2>
+          <div class="flex flex-wrap gap-3">
+            <a href="https://script.google.com/macros/s/AKfycbxytnJrjxWYGEKFpzQiw-VtZKj9l-yrBLm0hPUlV6ORsDBtFZhIuQkXfllydYbHDNvu/exec" target="_blank" rel="noopener noreferrer" class="shrink-0 whitespace-nowrap bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold py-2 px-6 rounded-full shadow-lg transform transition hover:-translate-y-1 flex items-center justify-center gap-2">
+              ✨ 示例:親師交流前台
+            </a>
+            <a href="https://drive.google.com/drive/folders/1a2XfJZH49PISsMwdLgLW21p3XBwlIGwJ?usp=sharing" target="_blank" rel="noopener noreferrer" class="shrink-0 whitespace-nowrap bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-bold py-2 px-6 rounded-full shadow-lg transform transition hover:-translate-y-1 flex items-center justify-center gap-2">
+              📁 示例:部署後台雲端
+            </a>
+          </div>
+        </div>
+        <p class="text-lg leading-relaxed text-slate-700">
+          讓家長或學生能直接在網頁上拍照上傳、甚至用手指畫押簽名，可以完美解決許多「回條」或「作業檢查」的痛點。配合 GAS 的強大功能，這些檔案會自動依照<strong>「學生座號」分類到雲端硬碟的專屬資料夾</strong>，資料表也會<strong>依據「當天日期」自動開新分頁</strong>，老師完全不需手動整理！<br><br>
+          更棒的是，我們能透過試算表的<strong class="text-emerald-600">『系統設定』工作表，像遙控器一樣隨時開關前台網頁的特定按鈕</strong>（例如控制是否讓家長下載總表），將前端介面與後端資料做完美的雙向連動！
+        </p>
+      </div>
+
+      <!-- 第一部分：Prompt 分析 -->
+      <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+        <div class="bg-slate-800 px-6 py-4 flex justify-between items-center">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span>📝</span> 第一部分：Prompt 分析
+          </h2>
+          <button id="btn-prompt2" onclick="copyText('prompt-text2', 'btn-prompt2')" class="bg-slate-600 hover:bg-slate-500 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors">
+            📋 一鍵複製
+          </button>
+        </div>
+        <div class="p-6 md:p-8 bg-slate-50">
+          <p class="mb-4 text-slate-600">這是用來生成親師交流 APP 的超強 Prompt，有顏色的部分代表您可以自由發揮替換的核心邏輯：</p>
+          <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-inner overflow-x-auto mb-6">
+            <pre id="prompt-text2" class="text-slate-700 font-mono text-sm whitespace-pre-wrap leading-relaxed">幫我製作一個「<span class="bg-yellow-200 px-1 rounded">親師交流</span>」的APP，功能上要有按鈕讓使用者1(家長)可以選擇學生的：<span class="bg-green-200 px-1 rounded">座號、家庭作業完成度、今日上學時的情緒表現</span>，以上的項目使用下拉式選單(預設一些選項，並要有新增選項功能)，<span class="bg-green-200 px-1 rounded">照片上傳區，溝通留言區、家長簽名畫板</span>。
+還要有可以下載回報事項彙整的PNG檔的功能按鈕可選。另外，需要一個「下載EXCEL」的功能按鈕。請注意：這個『下載EXCEL』按鈕是否要顯示給家長看，由老師(使用者2)來決定。請設計在 Google Sheet 中預設一個名為『<span class="bg-pink-200 px-1 rounded">系統設定</span>』的工作表，讓老師可以透過修改裡面的值（例如 TRUE/FALSE 或 開啟/關閉），當家長開啟網頁時會自動讀取這個設定，來<span class="bg-pink-200 px-1 rounded">動態控制前台是否要顯示或隱藏『下載EXCEL』按鈕</span>。
+APP還要有「同步至表單與硬碟」的按鈕和功能。當家長送出回報資料後，在指定的 Google Sheet 上請自動以「<span class="bg-blue-200 px-1 rounded">當日日期</span>」命名建立新的工作表（表單）來儲存資料。存放照片與簽名圖檔的 Google Drive 也要以「<span class="bg-blue-200 px-1 rounded">學生座號</span>」自動分別建立不同的子資料夾來歸檔。
+【安全與參數設定要求】
+為了避免將 Google Sheet ID 和 Google Drive Folder ID 硬編碼（Hard code）在程式碼中造成資安風險，請務必使用 GAS 的 PropertiesService（指令碼屬性）來動態讀取這兩個 ID（讀取 SHEET_ID 與 FOLDER_ID。並且在『code.gs』使用寫入的property也使用SHEET_ID 與 FOLDER_ID一致名稱避免造成讀取不到）。
+我要將這些功能建置前台，請給我完整的前後端 GAS 程式碼，以及一步一步引導我可以如何完成的詳細教學。
+在教學步驟中，請務必包含：
+1. 「如何到 GAS 編輯器後台設定『指令碼屬性 (Script Properties)』」的詳細操作步驟，讓我知道去哪裡填寫我真實的 ID。
+2. 教我如何在 Google Sheet 裡建立『系統設定』工作表，以及裡面欄位該怎麼填寫才能連動按鈕開關。
+程式碼的提供方式：
+後端部署程式碼請用💽符號加上命名，明確告訴我是要貼在『code.gs』。
+前台網頁程式碼請用🧑‍💻加上命名，明確告訴我這是貼在『Index』，且統一Index的「I」為大寫。</pre>
+          </div>
+
+          <!-- 解析區塊 -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="border border-yellow-300 bg-yellow-50 p-4 rounded-lg">
+              <h4 class="font-bold text-yellow-800 mb-1 flex items-center gap-2"><span class="block w-3 h-3 rounded-full bg-yellow-400"></span> 應用場景主題</h4>
+              <p class="text-sm text-yellow-700">決定 APP 的標題與主要用途。<br><strong>替換例子：</strong>「校外教學同意書」、「社團器材借用單」</p>
+            </div>
+            <div class="border border-green-300 bg-green-50 p-4 rounded-lg">
+              <h4 class="font-bold text-green-800 mb-1 flex items-center gap-2"><span class="block w-3 h-3 rounded-full bg-green-400"></span> 資料欄位與元件</h4>
+              <p class="text-sm text-green-700">前端表單的內容，可要求 AI 加入不同類型的輸入元件。<br><strong>替換例子：</strong>「器材名稱(下拉)、借用天數(數字)、損壞狀況照片上傳、借用人簽名」</p>
+            </div>
+            <div class="border border-pink-300 bg-pink-50 p-4 rounded-lg">
+              <h4 class="font-bold text-pink-800 mb-1 flex items-center gap-2"><span class="block w-3 h-3 rounded-full bg-pink-400"></span> 後台遠端遙控邏輯</h4>
+              <p class="text-sm text-pink-700">賦予試算表當「開關」的能力。<br><strong>替換例子：</strong>「透過修改系統設定，控制『活動報名』按鈕是否要替換成『報名已截止』」</p>
+            </div>
+            <div class="border border-blue-300 bg-blue-50 p-4 rounded-lg">
+              <h4 class="font-bold text-blue-800 mb-1 flex items-center gap-2"><span class="block w-3 h-3 rounded-full bg-blue-400"></span> 檔案歸檔自動化邏輯</h4>
+              <p class="text-sm text-blue-700">決定 AI 幫您分類雲端硬碟檔案與試算表分頁的規則。<br><strong>替換例子：</strong>「以『社團名稱』建資料夾」、「以『月份』建立工作表」</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第二部分：部署步驟與程式碼 -->
+      <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+        <div class="bg-emerald-600 px-6 py-4">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span>🚀</span> 第二部分：部署指南（以親師交流APP為例）
+          </h2>
+        </div>
+        
+        <div class="p-6 md:p-8 space-y-8">
+          <!-- 步驟一 -->
+          <div class="border-l-4 border-amber-400 pl-4">
+            <h3 class="text-lg font-bold text-slate-800 mb-2">步驟一：取得 ID 與設定環境變數保險箱</h3>
+            <ul class="list-disc list-inside text-slate-600 space-y-1">
+              <li>開啟專用試算表複製 ID <span class="text-amber-600 text-sm">(網址列「/」到「/」最長字串)</span>。</li>
+              <li>開啟 Google 雲端硬碟資料夾複製 ID <span class="text-amber-600 text-sm">(網址列「/」到「?」最長字串)</span>。</li>
+              <li>進入 Apps Script ➔ 點擊左側 ⚙️ 專案設定 ➔ 移至最下方「指令碼屬性」。</li>
+              <li>新增兩個屬性：
+                <ul class="list-circle list-inside ml-6 mt-1 text-slate-500">
+                  <li>屬性填 <code class="bg-slate-100 px-1 rounded text-pink-600">SHEET_ID</code>，值填入試算表 ID。</li>
+                  <li>屬性填 <code class="bg-slate-100 px-1 rounded text-pink-600">FOLDER_ID</code>，值填入資料夾 ID。</li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+
+          <!-- 步驟二 -->
+          <div class="border-l-4 border-pink-400 pl-4 bg-pink-50 p-4 rounded-r-xl">
+            <h3 class="text-lg font-bold text-slate-800 mb-2">步驟二：認識『系統設定』遙控器</h3>
+            <p class="text-slate-700 mb-2">這套系統非常聰明！以下的程式碼執行後，會<strong>自動在您的 Google 試算表中建立名為「系統設定」的工作表</strong>。您只需要知道如何操作它：</p>
+            <ul class="list-disc list-inside text-slate-700 space-y-2">
+              <li>當您完成後續的「發布部署」並首次開啟網頁後，回到試算表，就會發現系統已經幫您建好了 <strong>系統設定</strong> 分頁。</li>
+              <li>在這個分頁的 <strong>B2 欄位</strong>，預設會寫著 <code class="bg-pink-100 px-2 py-1 rounded text-pink-700 font-bold border border-pink-300">TRUE</code> (表示允許家長看到下載按鈕)。</li>
+              <li>您可以隨時將 B2 欄位改為 <code class="bg-pink-100 px-2 py-1 rounded text-pink-700 font-bold border border-pink-300">FALSE</code> (表示隱藏按鈕)。</li>
+            </ul>
+            <p class="text-sm text-pink-600 mt-3">💡 未來您只要像用遙控器一樣，更改 B2 的 TRUE / FALSE，前台家長網頁上的「下載EXCEL」按鈕就會瞬間顯示或消失，完全不需要動到程式碼！</p>
+          </div>
+
+          <!-- 步驟三 -->
+          <div>
+            <h3 class="text-lg font-bold text-slate-800 mb-2">步驟三：貼上後端大腦程式碼</h3>
+            <p class="text-slate-600 mb-2"><strong class="text-emerald-600">code.gs 的用途：</strong>處理資料寫入、讀取系統設定開關，並負責將 Base64 格式的照片與簽名圖檔還原為圖片，依據「學生座號」自動建立子資料夾儲存。</p>
+            <p class="text-slate-600 mb-3">請將 Apps Script 預設的程式碼清空，貼上以下內容：</p>
+            
+            <div class="relative rounded-xl overflow-hidden bg-slate-900 shadow-lg">
+              <div class="flex justify-between items-center px-4 py-2 bg-slate-800 border-b border-slate-700">
+                <div class="flex items-center gap-3">
+                  <span class="text-slate-300 font-mono text-sm">💽 code.gs</span>
+                  <button onclick="toggleCode('gs-code-container2')" class="text-emerald-400 hover:text-emerald-300 text-xs px-2 py-1 rounded border border-emerald-500/50 hover:bg-emerald-900/30 transition-colors">展開 / 收合程式碼</button>
+                </div>
+                <button id="btn-gs2" onclick="copyText('gs-code2', 'btn-gs2')" class="text-slate-300 hover:text-white bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-xs transition-colors">
+                  📋 複製程式碼
+                </button>
+              </div>
+              <div id="gs-code-container2" class="hidden p-4 overflow-x-auto">
+                <pre id="gs-code2" class="text-green-400 font-mono text-sm leading-relaxed whitespace-pre">// 💽 code.gs - 後端部署程式碼
+// 請將此段程式碼完整複製並貼上到 GAS 專案的『 code.gs 』檔案中
+
+function doGet() {
+  // 載入 Index.html 作為前台網頁，設定 Title 與 Meta 以支援手機版響應式設計
+  return HtmlService.createHtmlOutputFromFile('Index')
+      .setTitle('親師交流 APP')
+      .addMetaTag('viewport', 'width=device-width, initial-scale=1');
+}
+
+// 取得系統設定 (決定是否顯示 Excel 按鈕)
+function getSystemSettings() {
+  try {
+    const props = PropertiesService.getScriptProperties();
+    const sheetId = props.getProperty('SHEET_ID');
+    
+    if (!sheetId) {
+      return { success: false, error: "尚未在指令碼屬性中設定 SHEET_ID" };
+    }
+
+    const ss = SpreadsheetApp.openById(sheetId);
+    let settingsSheet = ss.getSheetByName('系統設定');
+
+    // 若尚未建立系統設定表，程式自動幫忙建立並填入預設值
+    if (!settingsSheet) {
+      settingsSheet = ss.insertSheet('系統設定');
+      settingsSheet.getRange('A1:B2').setValues([
+        ['設定項目', '設定值'],
+        ['顯示下載EXCEL按鈕', true]
+      ]);
+      // 標題加粗加底色
+      settingsSheet.getRange('A1:B1').setFontWeight('bold').setBackground('#f3f3f3');
+    }
+
+    // 讀取 B2 欄位的值
+    const val = settingsSheet.getRange('B2').getValue();
+    // 判斷是否為 true, TRUE, 或 "是"
+    const isTrue = (val === true || val === 'TRUE' || val === 'true' || val === '是');
+    
+    return { success: true, showExcel: isTrue };
+  } catch (e) {
+    return { success: false, error: e.toString() };
+  }
+}
+
+// 接收前台送來的資料，同步至表單與硬碟
+function submitData(data) {
+  try {
+    const props = PropertiesService.getScriptProperties();
+    const sheetId = props.getProperty('SHEET_ID');
+    const folderId = props.getProperty('FOLDER_ID');
+
+    if (!sheetId || !folderId) {
+      throw new Error("系統安全參數未設定完整，請檢查 SHEET_ID 或 FOLDER_ID");
+    }
+
+    const ss = SpreadsheetApp.openById(sheetId);
+    const rootFolder = DriveApp.getFolderById(folderId);
+
+    // 1. 處理資料夾歸檔 (以學生座號建立/尋找子資料夾)
+    const seatStr = "座號_" + data.seat;
+    let subFolder;
+    const folders = rootFolder.getFoldersByName(seatStr);
+    if (folders.hasNext()) {
+      subFolder = folders.next();
+    } else {
+      subFolder = rootFolder.createFolder(seatStr);
+    }
+
+    const timeStampForFile = new Date().getTime();
+
+    // 2. 處理照片上傳
+    let photoUrl = "";
+    if (data.photoBase64) {
+      // 移除 Base64 的 header (例如 data:image/jpeg;base64,)
+      const base64Data = data.photoBase64.split(',')[1];
+      const photoBlob = Utilities.newBlob(Utilities.base64Decode(base64Data), data.photoMimeType, data.seat + "_照片_" + timeStampForFile);
+      const photoFile = subFolder.createFile(photoBlob);
+      photoUrl = photoFile.getUrl();
+    }
+
+    // 3. 處理簽名圖檔上傳
+    let sigUrl = "";
+    if (data.sigBase64) {
+      const base64Data = data.sigBase64.split(',')[1];
+      const sigBlob = Utilities.newBlob(Utilities.base64Decode(base64Data), "image/png", data.seat + "_簽名_" + timeStampForFile + ".png");
+      const sigFile = subFolder.createFile(sigBlob);
+      sigUrl = sigFile.getUrl();
+    }
+
+    // 4. 處理 Google Sheet 表單紀錄 (以當日日期命名)
+    const todayStr = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd");
+    let dataSheet = ss.getSheetByName(todayStr);
+    
+    // 如果今天的工作表還沒建立，就新建一個並加上標題
+    if (!dataSheet) {
+      dataSheet = ss.insertSheet(todayStr);
+      dataSheet.appendRow(['紀錄時間', '學生座號', '作業完成度', '情緒表現', '溝通留言', '照片連結', '家長簽名連結']);
+      dataSheet.getRange('A1:G1').setFontWeight('bold').setBackground('#e2f0d9');
+      dataSheet.setFrozenRows(1);
+    }
+
+    // 5. 寫入資料
+    const recordTime = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd HH:mm:ss");
+    dataSheet.appendRow([
+      recordTime, 
+      data.seat, 
+      data.homework, 
+      data.emotion, 
+      data.comment, 
+      photoUrl, 
+      sigUrl
+    ]);
+
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e.toString() };
+  }
+}</pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- 步驟四 -->
+          <div>
+            <h3 class="text-lg font-bold text-slate-800 mb-2">步驟四：建立前端互動網頁</h3>
+            <p class="text-slate-600 mb-2"><strong class="text-emerald-600">Index.html 的功能：</strong>搭載了「Canvas 觸控畫布技術」讓家長能在螢幕上簽名，並能載入手機相簿照片轉譯為程式碼。網頁載入瞬間還會向後台詢問「我要不要顯示 EXCEL 按鈕」。</p>
+            <p class="text-slate-600 mb-3">在左側點擊 <code class="bg-slate-100 px-1 rounded">+ ➔ HTML</code>，命名為 <strong class="text-pink-600">Index</strong>，清空預設內容並貼上：</p>
+            
+            <div class="relative rounded-xl overflow-hidden bg-slate-900 shadow-lg">
+              <div class="flex justify-between items-center px-4 py-2 bg-slate-800 border-b border-slate-700">
+                <div class="flex items-center gap-3">
+                  <span class="text-slate-300 font-mono text-sm">🧑‍💻 Index.html</span>
+                  <button onclick="toggleCode('html-code-container2')" class="text-emerald-400 hover:text-emerald-300 text-xs px-2 py-1 rounded border border-emerald-500/50 hover:bg-emerald-900/30 transition-colors">展開 / 收合程式碼</button>
+                </div>
+                <button id="btn-html2" onclick="copyText('html-code2', 'btn-html2')" class="text-slate-300 hover:text-white bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-xs transition-colors">
+                  📋 複製程式碼
+                </button>
+              </div>
+              <div id="html-code-container2" class="hidden p-4 overflow-x-auto">
+                <pre id="html-code2" class="text-emerald-300 font-mono text-sm leading-relaxed whitespace-pre">&lt;!-- 🧑‍💻 Index.html - 前台網頁程式碼 --&gt;
+&lt;!-- 請將此段程式碼完整複製並貼上到 GAS 專案的『 Index.html 』檔案中。注意 I 為大寫 --&gt;
+
+&lt;!DOCTYPE html&gt;
+&lt;html lang="zh-TW"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;親師交流 APP&lt;/title&gt;
+    &lt;!-- 引入 Tailwind CSS 進行快速美觀排版 --&gt;
+    &lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;
+    &lt;!-- 引入 html2canvas 用於匯出 PNG --&gt;
+    &lt;script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"&gt;&lt;/script&gt;
+    &lt;!-- 引入 SheetJS 用於匯出 Excel --&gt;
+    &lt;script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"&gt;&lt;/script&gt;
+    &lt;style&gt;
+        /* 簽名畫板的邊框與觸控優化 */
+        #signaturePad {
+            border: 2px dashed #cbd5e1;
+            border-radius: 0.5rem;
+            touch-action: none; /* 防止在畫板上滑動時觸發螢幕滾動 */
+            background-color: #f8fafc;
+        }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body class="bg-blue-50 p-4 md:p-8 font-sans text-gray-800"&gt;
+
+    &lt;!-- 載入中遮罩 --&gt;
+    &lt;div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex flex-col justify-center items-center hidden text-white"&gt;
+        &lt;div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-white mb-4"&gt;&lt;/div&gt;
+        &lt;p class="text-xl font-bold" id="loadingText"&gt;系統處理中，請稍候...&lt;/p&gt;
+    &lt;/div&gt;
+
+    &lt;!-- 主要 APP 容器 (這區塊會被截圖匯出 PNG) --&gt;
+    &lt;div id="appContainer" class="max-w-xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden"&gt;
+        &lt;!-- 標題區 --&gt;
+        &lt;div class="bg-blue-600 text-white p-6 text-center"&gt;
+            &lt;h1 class="text-2xl font-bold"&gt;📖 每日親師交流紀錄&lt;/h1&gt;
+            &lt;p class="text-blue-100 text-sm mt-1"&gt;請家長填寫今日學生的狀況與留言&lt;/p&gt;
+        &lt;/div&gt;
+
+        &lt;div class="p-6 space-y-6"&gt;
+            
+            &lt;!-- 1. 座號 (下拉選單 + 自訂) --&gt;
+            &lt;div&gt;
+                &lt;label class="block font-bold mb-2 text-gray-700"&gt;🧑‍🎓 學生座號&lt;/label&gt;
+                &lt;select id="seatSelect" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 bg-gray-50" onchange="toggleCustom('seatSelect', 'seatCustom')"&gt;
+                    &lt;option value="" disabled selected&gt;請選擇座號...&lt;/option&gt;
+                    &lt;script&gt;
+                        // 動態生成 1~30 號
+                        for(let i=1; i&lt;=30; i++) {
+                            document.write(`&lt;option value="${i}"&gt;${i}號&lt;/option&gt;`);
+                        }
+                    &lt;/script&gt;
+                    &lt;option value="custom"&gt;➕ 新增選項 (自訂)...&lt;/option&gt;
+                &lt;/select&gt;
+                &lt;input type="text" id="seatCustom" placeholder="請輸入自訂座號..." class="w-full mt-2 p-3 border rounded-lg hidden focus:ring-2 focus:ring-blue-400 bg-blue-50"&gt;
+            &lt;/div&gt;
+
+            &lt;!-- 2. 作業完成度 (下拉選單 + 自訂) --&gt;
+            &lt;div&gt;
+                &lt;label class="block font-bold mb-2 text-gray-700"&gt;📝 家庭作業完成度&lt;/label&gt;
+                &lt;select id="hwSelect" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 bg-gray-50" onchange="toggleCustom('hwSelect', 'hwCustom')"&gt;
+                    &lt;option value="" disabled selected&gt;請選擇完成度...&lt;/option&gt;
+                    &lt;option value="全部完成，字體工整"&gt;全部完成，字體工整&lt;/option&gt;
+                    &lt;option value="全部完成"&gt;全部完成&lt;/option&gt;
+                    &lt;option value="完成大部分，有部分未懂"&gt;完成大部分，有部分未懂&lt;/option&gt;
+                    &lt;option value="未完成"&gt;未完成&lt;/option&gt;
+                    &lt;option value="custom"&gt;➕ 新增選項 (自訂)...&lt;/option&gt;
+                &lt;/select&gt;
+                &lt;input type="text" id="hwCustom" placeholder="請輸入作業狀況..." class="w-full mt-2 p-3 border rounded-lg hidden focus:ring-2 focus:ring-blue-400 bg-blue-50"&gt;
+            &lt;/div&gt;
+
+            &lt;!-- 3. 情緒表現 (下拉選單 + 自訂) --&gt;
+            &lt;div&gt;
+                &lt;label class="block font-bold mb-2 text-gray-700"&gt;🎭 今日上學情緒表現&lt;/label&gt;
+                &lt;select id="emoSelect" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 bg-gray-50" onchange="toggleCustom('emoSelect', 'emoCustom')"&gt;
+                    &lt;option value="" disabled selected&gt;請選擇情緒...&lt;/option&gt;
+                    &lt;option value="開心 / 充滿活力"&gt;😄 開心 / 充滿活力&lt;/option&gt;
+                    &lt;option value="平靜 / 正常"&gt;🙂 平靜 / 正常&lt;/option&gt;
+                    &lt;option value="疲倦 / 精神不佳"&gt;🥱 疲倦 / 精神不佳&lt;/option&gt;
+                    &lt;option value="抗拒 / 鬧情緒"&gt;😡 抗拒 / 鬧情緒&lt;/option&gt;
+                    &lt;option value="custom"&gt;➕ 新增選項 (自訂)...&lt;/option&gt;
+                &lt;/select&gt;
+                &lt;input type="text" id="emoCustom" placeholder="請輸入情緒狀況..." class="w-full mt-2 p-3 border rounded-lg hidden focus:ring-2 focus:ring-blue-400 bg-blue-50"&gt;
+            &lt;/div&gt;
+
+            &lt;!-- 4. 照片上傳區 --&gt;
+            &lt;div&gt;
+                &lt;label class="block font-bold mb-2 text-gray-700"&gt;📸 附加照片 (選填，如聯絡簿、作業等)&lt;/label&gt;
+                &lt;input type="file" id="photoInput" accept="image/*" class="w-full p-2 border rounded-lg bg-gray-50 text-sm"&gt;
+                &lt;p class="text-xs text-gray-500 mt-1"&gt;選取後系統會自動處理上傳&lt;/p&gt;
+            &lt;/div&gt;
+
+            &lt;!-- 5. 溝通留言區 --&gt;
+            &lt;div&gt;
+                &lt;label class="block font-bold mb-2 text-gray-700"&gt;💬 家長留言與溝通事項&lt;/label&gt;
+                &lt;textarea id="commentArea" rows="3" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 bg-gray-50" placeholder="如果有特別需要老師注意的事情，請填寫在這裡..."&gt;&lt;/textarea&gt;
+            &lt;/div&gt;
+
+            &lt;!-- 6. 家長簽名畫板 --&gt;
+            &lt;div&gt;
+                &lt;label class="block font-bold mb-2 text-gray-700"&gt;✍️ 家長電子簽名&lt;/label&gt;
+                &lt;!-- 畫布設定固定長寬避免座標偏移 --&gt;
+                &lt;canvas id="signaturePad" width="350" height="150" class="w-full max-w-[350px] mx-auto block"&gt;&lt;/canvas&gt;
+                &lt;div class="text-right mt-2"&gt;
+                    &lt;button onclick="clearSignature()" class="text-sm text-red-500 border border-red-500 px-3 py-1 rounded-md hover:bg-red-50 transition"&gt;清除重簽&lt;/button&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+
+            &lt;hr class="my-6 border-gray-200"&gt;
+
+            &lt;!-- 匯出與提交按鈕群 --&gt;
+            &lt;div class="grid grid-cols-1 md:grid-cols-2 gap-3 pb-4"&gt;
+                &lt;button onclick="downloadPNG()" class="bg-gray-800 hover:bg-gray-700 text-white font-bold py-3 px-4 rounded-xl shadow transition flex items-center justify-center"&gt;
+                    🖼️ 下載回報事項 (PNG)
+                &lt;/button&gt;
+                
+                &lt;!-- 動態顯示的 Excel 按鈕 --&gt;
+                &lt;button id="btnExcel" onclick="downloadExcel()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-xl shadow transition hidden items-center justify-center"&gt;
+                    📊 下載回報事項 (EXCEL)
+                &lt;/button&gt;
+                
+                &lt;!-- 提交主按鈕 (跨越兩欄) --&gt;
+                &lt;button onclick="submitForm()" class="md:col-span-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg py-4 px-4 rounded-xl shadow-lg transition mt-2 flex items-center justify-center"&gt;
+                    🚀 同步至表單與硬碟
+                &lt;/button&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;script&gt;
+        // --- 初始化與設定讀取 ---
+        window.onload = function() {
+            // 讀取後台設定來決定是否顯示 Excel 按鈕 (增加環境檢查以防止預覽時報錯)
+            if (typeof google !== 'undefined' &amp;&amp; google.script &amp;&amp; google.script.run) {
+                google.script.run.withSuccessHandler(function(res) {
+                    if(res.success &amp;&amp; res.showExcel) {
+                        const btn = document.getElementById('btnExcel');
+                        btn.classList.remove('hidden');
+                        btn.classList.add('flex');
+                    }
+                }).getSystemSettings();
+            } else {
+                console.log("未偵測到 GAS 環境，開啟預覽模式並顯示 Excel 按鈕。");
+                const btn = document.getElementById('btnExcel');
+                btn.classList.remove('hidden');
+                btn.classList.add('flex');
+            }
+        };
+
+        // --- 下拉選單自訂選項切換邏輯 ---
+        function toggleCustom(selectId, customInputId) {
+            const select = document.getElementById(selectId);
+            const customInput = document.getElementById(customInputId);
+            if (select.value === 'custom') {
+                customInput.classList.remove('hidden');
+                customInput.focus();
+            } else {
+                customInput.classList.add('hidden');
+                customInput.value = ''; // 清空自訂內容
+            }
+        }
+
+        // 取得下拉選單最終決定的值 (如果是選 custom，就取 input 的值)
+        function getFinalValue(selectId, customInputId) {
+            const select = document.getElementById(selectId);
+            const customInput = document.getElementById(customInputId);
+            return (select.value === 'custom') ? customInput.value : select.value;
+        }
+
+        // --- 照片讀取轉 Base64 邏輯 ---
+        let photoBase64Data = null;
+        let photoMimeType = null;
+        document.getElementById('photoInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                photoMimeType = file.type;
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    photoBase64Data = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // --- 簽名畫板邏輯 ---
+        const canvas = document.getElementById('signaturePad');
+        const ctx = canvas.getContext('2d');
+        ctx.lineWidth = 3;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = '#000000';
+        let isDrawing = false;
+
+        // 獲取正確的座標 (支援滑鼠與觸控)
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            let clientX, clientY;
+            if (e.touches &amp;&amp; e.touches.length &gt; 0) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+            return {
+                x: (clientX - rect.left) * (canvas.width / rect.width),
+                y: (clientY - rect.top) * (canvas.height / rect.height)
+            };
+        }
+
+        function startPosition(e) {
+            e.preventDefault();
+            isDrawing = true;
+            const pos = getPos(e);
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+            draw(e);
+        }
+
+        function endPosition() {
+            isDrawing = false;
+            ctx.beginPath();
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            e.preventDefault();
+            const pos = getPos(e);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+        }
+
+        canvas.addEventListener('mousedown', startPosition);
+        canvas.addEventListener('mouseup', endPosition);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseleave', endPosition);
+
+        canvas.addEventListener('touchstart', startPosition, { passive: false });
+        canvas.addEventListener('touchend', endPosition);
+        canvas.addEventListener('touchmove', draw, { passive: false });
+
+        function clearSignature() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function isCanvasBlank() {
+            const blank = document.createElement('canvas');
+            blank.width = canvas.width;
+            blank.height = canvas.height;
+            return canvas.toDataURL() === blank.toDataURL();
+        }
+
+        // --- 功能按鈕：匯出 PNG ---
+        function downloadPNG() {
+            // 隱藏不必要的按鈕避免截圖時出現
+            const originalBtns = document.querySelector('.grid.grid-cols-1').innerHTML;
+            document.querySelector('.grid.grid-cols-1').innerHTML = '&lt;p class="text-center text-gray-500"&gt;此為系統匯出之親師交流紀錄圖檔&lt;/p&gt;';
+            
+            html2canvas(document.getElementById('appContainer')).then(canvas =&gt; {
+                const link = document.createElement('a');
+                link.download = '親師交流紀錄_' + getFinalValue('seatSelect', 'seatCustom') + '號.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                // 恢復按鈕
+                document.querySelector('.grid.grid-cols-1').innerHTML = originalBtns;
+            });
+        }
+
+        // --- 功能按鈕：匯出 Excel ---
+        function downloadExcel() {
+            const seat = getFinalValue('seatSelect', 'seatCustom') || '未填';
+            const hw = getFinalValue('hwSelect', 'hwCustom') || '未填';
+            const emo = getFinalValue('emoSelect', 'emoCustom') || '未填';
+            const comment = document.getElementById('commentArea').value || '無';
+
+            const ws_data = [
+                ["匯出日期", "學生座號", "作業完成度", "情緒表現", "溝通留言"],
+                [new Date().toLocaleDateString(), seat, hw, emo, comment]
+            ];
+            
+            const ws = XLSX.utils.aoa_to_sheet(ws_data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "回報資料");
+            
+            XLSX.writeFile(wb, "親師交流紀錄_" + seat + "號.xlsx");
+        }
+
+        // --- 主功能：同步至表單與硬碟 ---
+        function submitForm() {
+            const seat = getFinalValue('seatSelect', 'seatCustom');
+            const hw = getFinalValue('hwSelect', 'hwCustom');
+            const emo = getFinalValue('emoSelect', 'emoCustom');
+            const comment = document.getElementById('commentArea').value;
+
+            // 基本驗證
+            if (!seat || !hw || !emo) {
+                alert('⚠️ 請確認「座號」、「作業完成度」及「情緒表現」是否已選擇或填寫完整！');
+                return;
+            }
+
+            // 準備打包送往後端的資料
+            const payload = {
+                seat: seat,
+                homework: hw,
+                emotion: emo,
+                comment: comment,
+                photoBase64: photoBase64Data,
+                photoMimeType: photoMimeType,
+                sigBase64: isCanvasBlank() ? null : canvas.toDataURL('image/png')
+            };
+
+            // 顯示 Loading 遮罩
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+            document.getElementById('loadingText').innerText = "上傳資料至硬碟與表單中...";
+
+            // 呼叫 GAS 後端涵式 submitData (增加環境檢查)
+            if (typeof google !== 'undefined' &amp;&amp; google.script &amp;&amp; google.script.run) {
+                google.script.run.withSuccessHandler(function(res) {
+                    document.getElementById('loadingOverlay').classList.add('hidden');
+                    if (res.success) {
+                        alert('✅ 回報成功！資料已同步至老師的系統中。');
+                        // 重新整理網頁清除表單
+                        window.location.reload(); 
+                    } else {
+                        alert('❌ 發生錯誤：' + res.error);
+                    }
+                }).withFailureHandler(function(err) {
+                    document.getElementById('loadingOverlay').classList.add('hidden');
+                    alert('❌ 系統連線異常，請稍後再試。');
+                }).submitData(payload);
+            } else {
+                // 本機預覽模擬行為 (不會真的上傳資料)
+                setTimeout(() =&gt; {
+                    document.getElementById('loadingOverlay').classList.add('hidden');
+                    alert('✅ [本機預覽模式] 模擬回報成功！(資料未真正上傳至表單)');
+                    window.location.reload(); 
+                }, 1000);
+            }
+        }
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- 步驟五 -->
+          <div class="border-l-4 border-emerald-400 pl-4 bg-emerald-50/50 p-4 rounded-r-xl">
+            <h3 class="text-lg font-bold text-slate-800 mb-2">步驟五：發布部署</h3>
+            <ul class="list-decimal list-inside text-slate-700 space-y-2">
+              <li>點擊右上角「部署」 ➔ 「新增部署」。</li>
+              <li>類型選擇「網頁應用程式」。</li>
+              <li>執行身分選「我」，權限選「所有人」。</li>
+              <li>部署後，將網址發給家長。<br><span class="text-emerald-700 font-bold ml-6 mt-1 block">✨ 現在，當家長送出表單，資料就會像魔法一樣乖乖躺進專屬資料夾與今天日期的新分頁裡了！</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 分頁 3 內容 -->
+    <div id="tab3" class="tab-content hidden fade-in space-y-8">
+      
+      <!-- 前言 -->
+      <div class="bg-white rounded-2xl shadow-sm p-6 md:p-8 border-l-4 border-purple-500">
+        <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-4 mb-4">
+          <h2 class="text-xl font-bold text-slate-800">為什麼需要「動態抓取資料」與「Mock API 本地預覽」？</h2>
+          <div class="flex flex-wrap gap-3">
+            <a href="https://script.google.com/macros/s/AKfycby5HGewESNt4rSvGfM8F2kg-sHQoyv6-QfjU5boNnyYCcrYEYv8iNmu4qWLU43e-gGB/exec" target="_blank" rel="noopener noreferrer" class="shrink-0 whitespace-nowrap bg-gradient-to-r from-purple-500 to-fuchsia-500 hover:from-purple-600 hover:to-fuchsia-600 text-white font-bold py-2 px-6 rounded-full shadow-lg transform transition hover:-translate-y-1 flex items-center justify-center gap-2">
+              ✨ 示例:線上測驗前台
+            </a>
+            <a href="https://docs.google.com/spreadsheets/d/1blVRi27sgJ7Trg25z-VghvHbd7jaexIAZWVVPwfWNSI/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="shrink-0 whitespace-nowrap bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600 text-white font-bold py-2 px-6 rounded-full shadow-lg transform transition hover:-translate-y-1 flex items-center justify-center gap-2">
+              📁 示例:測驗後台雲端
+            </a>
+          </div>
+        </div>
+        <p class="text-lg leading-relaxed text-slate-700">
+          把 Google Sheet 當成「資料庫」，可以讓系統在不改程式碼的情況下，動態抽換內容！在這個範例中，前端網頁一開啟就會去後台抓取「題庫」，學生繳交後自動批改，甚至能隨時點擊按鈕去查詢老師在試算表上打的「回饋」。這就是所謂的<strong class="text-purple-600">前後端雙向 CRUD (新增、讀取、更新、刪除) 基礎</strong>。<br><br>
+          更厲害的是，我們在程式碼中加入了 <strong>Mock API (模擬環境)</strong>。這能解決以往開發 GAS 時「只能部署後才能看到結果」的痛點，讓您在自己的電腦點開網頁就能預覽測試，部署後又會自動切換為正式連線，是非常專業的開發技巧！
+        </p>
+      </div>
+
+      <!-- 第一部分：Prompt 分析 -->
+      <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+        <div class="bg-slate-800 px-6 py-4 flex justify-between items-center">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span>📝</span> 第一部分：Prompt 分析
+          </h2>
+          <button id="btn-prompt3" onclick="copyText('prompt-text3', 'btn-prompt3')" class="bg-slate-600 hover:bg-slate-500 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors">
+            📋 一鍵複製
+          </button>
+        </div>
+        <div class="p-6 md:p-8 bg-slate-50">
+          <p class="mb-4 text-slate-600">透過這個結構嚴謹的 Prompt，您可以讓 AI 直接幫您把複雜的前後端互動邏輯寫得服服貼貼：</p>
+          <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-inner overflow-x-auto mb-6">
+            <pre id="prompt-text3" class="text-slate-700 font-mono text-sm whitespace-pre-wrap leading-relaxed">幫我製作一個「<span class="bg-yellow-200 px-1 rounded">考試與回傳教師回饋</span>」的 Web APP。
+【前端功能與介面】
+學生可透過下拉式選單選擇「班級」與「姓名」。
+系統需從 Google Sheet 動態讀取<span class="bg-green-200 px-1 rounded">該次考試題目（包含選擇題、手寫題）</span>。
+提供「手寫板」功能，讓學生可以在畫布上填寫手寫題，並將手寫圖檔上傳至指定的 Google Drive。
+「<span class="bg-green-200 px-1 rounded">繳交</span>」按鈕：按下後，系統要自動批改選擇題、在網頁顯示成績，並將成績與學生的作答資料寫入 Google Sheet 中。
+「<span class="bg-green-200 px-1 rounded">觀看教師回饋</span>」按鈕：按下後，系統會從 Google Sheet 抓取該生該次考試「同一列」後方欄位的資料，顯示教師回饋（需支援顯示純文字、一般連結、圖檔連結、檔案連結）。
+<span class="bg-pink-200 px-1 rounded">本地端預覽與 CRUD 機制：請處理非 GAS 環境中 google is not defined 的問題。請寫一個 Mock API（模擬環境），讓網頁在本地端（Local）預覽時能提供模擬測試資料；部署到 GAS 後則自動切換、順暢連線到後端，並在架構上預留/實作資料的 CRUD 邏輯。</span>
+
+【後端資料邏輯與自動化建置 (Auto-Init)】
+學生繳交的資料，請在 Google Sheet 中以「<span class="bg-blue-200 px-1 rounded">考試單元名稱</span>」作為分頁（工作表）命名，將同一次考試的資料集中在同一個分頁。教師回饋的欄位請直接接在該生該次考試資料的同一列後方。
+完全自動建置範本：不需要手動進去編輯器按「執行」。請在 code.gs 的資料讀取函數（例如 getInitialData）中加入自動偵測機制：只要系統發現 Google Sheet 裡面沒有相對應的「<span class="bg-blue-200 px-1 rounded">題庫分頁</span>」或「<span class="bg-blue-200 px-1 rounded">考試單元分頁</span>」，請自動觸發建立，並設定好所有的標題欄位。
+自動建立分頁時，請一併「模擬填入」幾筆測試用的班級、姓名、題目與教師回饋內容，讓系統一載入就有資料可以測試。
+
+【安全與參數設定要求 (取代 Hard Code)】
+為了避免將 Google Sheet ID 和 Google Drive Folder ID 硬編碼（Hard code），請務必使用 GAS 的 PropertiesService（指令碼屬性）來動態讀取這兩個 ID（讀取 SHEET_ID 與 FOLDER_ID。並且在『code.gs』使用寫入的property也使用SHEET_ID 與 FOLDER_ID一致名稱避免造成讀取不到）。
+【程式碼交付與部署引導】
+請給我完整的前後端 GAS 程式碼，並提供詳細的部署步驟。
+在教學步驟中，請務必包含「如何到 GAS 編輯器後台設定『指令碼屬性 (Script Properties)』」的詳細操作步驟。
+後端部署程式碼請用 📁 符號加上命名，明確告訴我是要貼在『code.gs』。
+前台網頁程式碼請用 🧑‍💻 加上命名，明確告訴我這是貼在『Index』，且統一 Index 的「I」為大寫。</pre>
+          </div>
+
+          <!-- 解析區塊 -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="border border-yellow-300 bg-yellow-50 p-4 rounded-lg">
+              <h4 class="font-bold text-yellow-800 mb-1 flex items-center gap-2"><span class="block w-3 h-3 rounded-full bg-yellow-400"></span> 應用場景主題</h4>
+              <p class="text-sm text-yellow-700">決定 APP 的標題與雙向互動的情境。<br><strong>替換例子：</strong>「活動報名與報到查詢」、「維修派單與進度追蹤」</p>
+            </div>
+            <div class="border border-green-300 bg-green-50 p-4 rounded-lg">
+              <h4 class="font-bold text-green-800 mb-1 flex items-center gap-2"><span class="block w-3 h-3 rounded-full bg-green-400"></span> 雙向 CRUD 按鈕邏輯</h4>
+              <p class="text-sm text-green-700">明確定義哪些按鈕負責寫入 (Create/Update)，哪些按鈕負責讀取 (Read)。<br><strong>替換例子：</strong>「『報修』按鈕寫入損壞狀況，『查詢進度』按鈕讀取水電工的回覆」</p>
+            </div>
+            <div class="border border-pink-300 bg-pink-50 p-4 rounded-lg">
+              <h4 class="font-bold text-pink-800 mb-1 flex items-center gap-2"><span class="block w-3 h-3 rounded-full bg-pink-400"></span> 開發者進階指令 (關鍵)</h4>
+              <p class="text-sm text-pink-700">這段指令強迫 AI 寫出專業的前端架構，加入 Mock API 防錯，未來您就能在自己的電腦用瀏覽器無痛測試網頁外觀！</p>
+            </div>
+            <div class="border border-blue-300 bg-blue-50 p-4 rounded-lg">
+              <h4 class="font-bold text-blue-800 mb-1 flex items-center gap-2"><span class="block w-3 h-3 rounded-full bg-blue-400"></span> 智慧資料庫表單規劃</h4>
+              <p class="text-sm text-blue-700">指示 AI 在試算表中建立關聯性結構，例如題庫表、成績表該怎麼連動。<br><strong>替換例子：</strong>「以『月份』為分頁儲存派單，並將維修結果直接接在該列後方」</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第二部分：部署步驟與程式碼 -->
+      <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+        <div class="bg-purple-600 px-6 py-4">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span>🚀</span> 第二部分：部署指南（以線上測驗與回饋系統為例）
+          </h2>
+        </div>
+        
+        <div class="p-6 md:p-8 space-y-8">
+          <!-- 步驟一 -->
+          <div class="border-l-4 border-amber-400 pl-4">
+            <h3 class="text-lg font-bold text-slate-800 mb-2">步驟一：取得 ID 與設定環境變數保險箱</h3>
+            <ul class="list-disc list-inside text-slate-600 space-y-1">
+              <li>開啟專用試算表複製 ID <span class="text-amber-600 text-sm">(網址列「/」到「/」最長字串)</span>。</li>
+              <li>開啟 Google 雲端硬碟資料夾複製 ID <span class="text-amber-600 text-sm">(網址列「/」到「?」最長字串)</span>。</li>
+              <li>進入 Apps Script ➔ 點擊左側 ⚙️ 專案設定 ➔ 移至最下方「指令碼屬性」。</li>
+              <li>新增兩個屬性：
+                <ul class="list-circle list-inside ml-6 mt-1 text-slate-500">
+                  <li>屬性填 <code class="bg-slate-100 px-1 rounded text-pink-600">SHEET_ID</code>，值填入試算表 ID。</li>
+                  <li>屬性填 <code class="bg-slate-100 px-1 rounded text-pink-600">FOLDER_ID</code>，值填入資料夾 ID。</li>
+                </ul>
+              </li>
+            </ul>
+            <div class="mt-4 relative inline-block group">
+              <div class="bg-white p-2 rounded-xl border border-slate-200 shadow-sm">
+                <img src="https://i.meee.com.tw/jEEGTvg.png" alt="ID 取得教學圖示" class="max-w-full rounded-lg cursor-pointer transition-opacity hover:opacity-95" style="max-height: 250px;" onclick="openLightbox(this.src)">
+              </div>
+              <button onclick="openLightbox('https://i.meee.com.tw/jEEGTvg.png')" class="absolute bottom-4 right-4 bg-slate-800/80 hover:bg-slate-900 text-white text-sm py-1.5 px-3 rounded-full shadow-lg backdrop-blur-sm flex items-center gap-1 transition-transform hover:scale-105">
+                🔍 放大
+              </button>
+            </div>
+          </div>
+
+          <!-- 步驟二 -->
+          <div class="border-l-4 border-purple-400 pl-4 bg-purple-50 p-4 rounded-r-xl">
+            <h3 class="text-lg font-bold text-slate-800 mb-2">步驟二：全自動建置題庫與名單 (Auto-Init)</h3>
+            <p class="text-slate-700 mb-2">這套系統搭載了終極的「自動補全機制」！</p>
+            <ul class="list-disc list-inside text-slate-700 space-y-2">
+              <li>您<strong>完全不需要</strong>事先在試算表建立任何分頁或打字！</li>
+              <li>只要完成部署並首次開啟網頁，系統就會在背景自動幫您建好 <code class="font-bold text-purple-700">題庫</code>、<code class="font-bold text-purple-700">名單</code> 以及 <code class="font-bold text-purple-700">第一單元測驗</code> 等分頁。</li>
+              <li>甚至連「選項A、選項B、答案」的測試資料都會一併寫入，讓您網頁一打開就有內容可以預覽測試！</li>
+            </ul>
+          </div>
+
+          <!-- 步驟三 -->
+          <div>
+            <h3 class="text-lg font-bold text-slate-800 mb-2">步驟三：貼上後端大腦程式碼</h3>
+            <p class="text-slate-600 mb-2"><strong class="text-purple-600">code.gs 的用途：</strong>不僅負責儲存資料，還包含了「自動批改選擇題邏輯」以及反向去試算表「查詢老師回饋」的搜尋功能。</p>
+            <p class="text-slate-600 mb-3">請將 Apps Script 預設的程式碼清空，貼上以下內容：</p>
+            
+            <div class="relative rounded-xl overflow-hidden bg-slate-900 shadow-lg">
+              <div class="flex justify-between items-center px-4 py-2 bg-slate-800 border-b border-slate-700">
+                <div class="flex items-center gap-3">
+                  <span class="text-slate-300 font-mono text-sm">📁 code.gs</span>
+                  <button onclick="toggleCode('gs-code-container3')" class="text-purple-400 hover:text-purple-300 text-xs px-2 py-1 rounded border border-purple-500/50 hover:bg-purple-900/30 transition-colors">展開 / 收合程式碼</button>
+                </div>
+                <button id="btn-gs3" onclick="copyText('gs-code3', 'btn-gs3')" class="text-slate-300 hover:text-white bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-xs transition-colors">
+                  📋 複製程式碼
+                </button>
+              </div>
+              <div id="gs-code-container3" class="hidden p-4 overflow-x-auto">
+                <pre id="gs-code3" class="text-green-400 font-mono text-sm leading-relaxed whitespace-pre">/**
+ * 考試與回傳教師回饋系統 - 後端邏輯 (code.gs)
+ */
+
+function doGet(e) {
+  return HtmlService.createHtmlOutputFromFile('Index')
+    .setTitle('考試與回傳教師回饋系統')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1');
+}
+
+/**
+ * 自動初始化系統 (Auto-Init)
+ * 如果沒有對應的 Sheet，會自動建立並填入測試資料。
+ */
+function autoInitSystem() {
+  const props = PropertiesService.getScriptProperties();
+  const sheetId = props.getProperty('SHEET_ID');
+  
+  let ss;
+  try {
+    if (sheetId) {
+      ss = SpreadsheetApp.openById(sheetId);
+    } else {
+      // 若沒有設定 ID，嘗試獲取綁定的試算表作為備案
+      ss = SpreadsheetApp.getActiveSpreadsheet();
+      if (!ss) throw new Error("無綁定試算表");
+    }
+  } catch (e) {
+    throw new Error("找不到 Google Sheet。請確認『專案設定 -> 指令碼屬性』中的 SHEET_ID 是否設定正確。");
+  }
+
+  // 1. 初始化設定與題庫表
+  let qSheet = ss.getSheetByName('題庫與設定');
+  if (!qSheet) {
+    qSheet = ss.insertSheet('題庫與設定');
+    qSheet.appendRow(['班級', '姓名', '', '考試單元名稱', '', '題號', '題型', '題目內容', '選項(以逗號分隔)', '標準答案']);
+    
+    // 寫入模擬班級名單與題庫
+    const mockData = [
+      ['三年甲班', '王小明', '', '第一次平時測驗', '', '1', '選擇', '1+1等於多少？', '1,2,3,4', '2'],
+      ['三年甲班', '陳小華', '', '', '', '2', '選擇', '台灣最高的山是？', '阿里山,玉山,陽明山,合歡山', '玉山'],
+      ['三年乙班', '林小美', '', '', '', '3', '手寫', '請在下方畫布簽下你的名字：', '', ''],
+      ['三年乙班', '張大頭', '', '', '', '', '', '', '', '']
+    ];
+    mockData.forEach(row => qSheet.appendRow(row));
+    
+    qSheet.setFrozenRows(1);
+    qSheet.getRange("H:H").setWidth(250);
+  }
+
+  // 取得考試單元名稱
+  let unitName = qSheet.getRange("D2").getValue();
+  if (!unitName) unitName = '未命名考試';
+
+  // 2. 初始化考試結果分頁
+  let examSheet = ss.getSheetByName(unitName);
+  if (!examSheet) {
+    examSheet = ss.insertSheet(unitName);
+    // 預設標題欄位
+    examSheet.appendRow([
+      '時間戳記', '班級', '姓名', '選擇題總分', '第一題作答', '第二題作答', '手寫題作答',
+      '手寫圖檔網址', '教師回饋_文字', '教師回饋_連結', '教師回饋_檔案'
+    ]);
+    examSheet.setFrozenRows(1);
+    
+    // 模擬一筆已批改資料 (供觀看回饋功能測試)
+    examSheet.appendRow([
+      new Date(), '三年甲班', '王小明', '100', '2', '玉山', '已作答',
+      'https://example.com/mock-image.png', '寫得非常工整，觀念也很正確，繼續保持！', 'https://zh.wikipedia.org/', 'https://picsum.photos/300'
+    ]);
+  }
+
+  return { ss, qSheet, examSheet, unitName };
+}
+
+/**
+ * 讓前端取得初始資料 (班級、姓名、題庫)
+ */
+function getInitialData() {
+  const { qSheet, unitName } = autoInitSystem();
+  const data = qSheet.getDataRange().getValues();
+  
+  let classes = new Set();
+  let students = {};
+  let questions = [];
+
+  // 解析資料 (略過標題列 i=0)
+  for (let i = 1; i < data.length; i++) {
+    const row = data[i];
+    const className = row[0];
+    const studentName = row[1];
+    
+    // 處理班級與學生名單
+    if (className && studentName) {
+      classes.add(className);
+      if (!students[className]) students[className] = [];
+      students[className].push(studentName);
+    }
+    
+    // 處理題庫
+    const qId = row[5];
+    const qType = row[6];
+    const qContent = row[7];
+    const qOptions = row[8];
+    const qAnswer = row[9];
+    
+    if (qId && qType && qContent) {
+      questions.push({
+        id: qId,
+        type: qType,
+        content: qContent,
+        options: qOptions ? qOptions.split(',').map(s => s.trim()) : [],
+        answer: String(qAnswer).trim()
+      });
+    }
+  }
+
+  return {
+    unitName: unitName,
+    classes: Array.from(classes),
+    students: students,
+    questions: questions
+  };
+}
+
+/**
+ * 將手寫圖片上傳至 Google Drive
+ */
+function uploadImageToDrive(base64Str, filename) {
+  if (!base64Str) return "無圖檔";
+  
+  const props = PropertiesService.getScriptProperties();
+  const folderId = props.getProperty('FOLDER_ID');
+  
+  let folder;
+  try {
+    folder = folderId ? DriveApp.getFolderById(folderId) : DriveApp.getRootFolder();
+  } catch (e) {
+    folder = DriveApp.getRootFolder(); // 發生錯誤時退回根目錄
+  }
+
+  // 解析 base64
+  const split = base64Str.split(',');
+  if (split.length < 2) return "圖檔格式錯誤";
+  
+  const type = split[0].match(/:(.*?);/)[1];
+  const data = split[1];
+  const blob = Utilities.newBlob(Utilities.base64Decode(data), type, filename);
+  
+  const file = folder.createFile(blob);
+  file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+  
+  return file.getUrl();
+}
+
+/**
+ * 處理學生繳交考卷
+ */
+function submitExam(payload) {
+  const { unitName, className, studentName, score, answers, canvasBase64 } = payload;
+  const { examSheet } = autoInitSystem();
+  
+  // 1. 上傳手寫圖片
+  const imgFilename = `${unitName}_${className}_${studentName}_手寫.png`;
+  const imgUrl = uploadImageToDrive(canvasBase64, imgFilename);
+  
+  // 2. 組合要寫入 Sheet 的陣列 (前四欄: 時間,班級,姓名,分數)
+  let rowData = [new Date(), className, studentName, score];
+  
+  // 加入每一題的作答 (限制前10題，避免陣列過長，可依需求調整)
+  answers.forEach(ans => rowData.push(ans || "未作答"));
+  
+  // 補足空欄位，確保圖片與回饋欄位位置一致 (假設最多 3 題)
+  while(rowData.length < 7) { rowData.push(""); }
+  
+  // 加入圖片網址與預留的回饋欄位
+  rowData.push(imgUrl, "", "", "");
+  
+  examSheet.appendRow(rowData);
+  return { success: true, message: `繳交成功！您的選擇題得分為：${score} 分。`, score: score };
+}
+
+/**
+ * 讀取教師回饋
+ */
+function getFeedback(payload) {
+  const { unitName, className, studentName } = payload;
+  const { ss } = autoInitSystem();
+  const sheet = ss.getSheetByName(unitName);
+  if (!sheet) throw new Error("尚未找到考試紀錄表");
+
+  const data = sheet.getDataRange().getValues();
+  const headers = data[0];
+
+  const classIdx = headers.indexOf('班級');
+  const nameIdx = headers.indexOf('姓名');
+  const textIdx = headers.indexOf('教師回饋_文字');
+  const linkIdx = headers.indexOf('教師回饋_連結');
+  const fileIdx = headers.indexOf('教師回饋_檔案');
+
+  // 從最後一筆資料往上找 (取最新的作答紀錄)
+  for (let i = data.length - 1; i >= 1; i--) {
+    if (data[i][classIdx] === className && data[i][nameIdx] === studentName) {
+      return {
+        success: true,
+        text: textIdx !== -1 ? data[i][textIdx] : '',
+        link: linkIdx !== -1 ? data[i][linkIdx] : '',
+        file: fileIdx !== -1 ? data[i][fileIdx] : ''
+      };
+    }
+  }
+  return { success: false, error: '尚未找到您的作答紀錄，或教師尚未批改。' };
+}</pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- 步驟四 -->
+          <div>
+            <h3 class="text-lg font-bold text-slate-800 mb-2">步驟四：建立前端互動網頁 (含 Mock API)</h3>
+            <p class="text-slate-600 mb-2"><strong class="text-purple-600">Index.html 的功能：</strong>透過 Mock API 的設計，這段語法就算您直接存成 HTML 檔在電腦上雙擊打開，都能正常呈現模擬資料與動畫！放到 GAS 部署後則會自動轉換為呼叫真實後端資料。</p>
+            <p class="text-slate-600 mb-3">在左側點擊 <code class="bg-slate-100 px-1 rounded">+ ➔ HTML</code>，命名為 <strong class="text-pink-600">Index</strong>，清空預設內容並貼上：</p>
+            
+            <div class="relative rounded-xl overflow-hidden bg-slate-900 shadow-lg">
+              <div class="flex justify-between items-center px-4 py-2 bg-slate-800 border-b border-slate-700">
+                <div class="flex items-center gap-3">
+                  <span class="text-slate-300 font-mono text-sm">🧑‍💻 Index.html</span>
+                  <button onclick="toggleCode('html-code-container3')" class="text-purple-400 hover:text-purple-300 text-xs px-2 py-1 rounded border border-purple-500/50 hover:bg-purple-900/30 transition-colors">展開 / 收合程式碼</button>
+                </div>
+                <button id="btn-html3" onclick="copyText('html-code3', 'btn-html3')" class="text-slate-300 hover:text-white bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-xs transition-colors">
+                  📋 複製程式碼
+                </button>
+              </div>
+              <div id="html-code-container3" class="hidden p-4 overflow-x-auto">
+                <pre id="html-code3" class="text-purple-300 font-mono text-sm leading-relaxed whitespace-pre">&lt;!DOCTYPE html&gt;
+&lt;html lang="zh-TW"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;考試與回傳教師回饋系統&lt;/title&gt;
+    &lt;!-- 使用 Tailwind CSS 加速 UI 開發 --&gt;
+    &lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;
+    &lt;style&gt;
+        /* 防止在手機畫布上畫畫時造成畫面滾動 */
+        canvas { touch-action: none; }
+        .spinner { border: 3px solid rgba(255,255,255,.3); border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body class="bg-gray-100 min-h-screen font-sans text-gray-800"&gt;
+
+&lt;div class="max-w-3xl mx-auto p-4 sm:p-6 lg:p-8"&gt;
+    &lt;!-- Header --&gt;
+    &lt;div class="bg-white rounded-2xl shadow-sm p-6 mb-6"&gt;
+        &lt;h1 class="text-2xl font-bold text-blue-600 mb-2" id="uiUnitName"&gt;載入中...&lt;/h1&gt;
+        &lt;p class="text-sm text-gray-500"&gt;請選擇您的班級與姓名，並完成下方測驗。&lt;/p&gt;
+        
+        &lt;div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6"&gt;
+            &lt;div&gt;
+                &lt;label class="block text-sm font-medium text-gray-700 mb-1"&gt;班級&lt;/label&gt;
+                &lt;select id="classSelect" class="w-full border-gray-300 rounded-lg shadow-sm p-2.5 bg-gray-50 border outline-none focus:ring-2 focus:ring-blue-500"&gt;
+                    &lt;option value=""&gt;請選擇班級&lt;/option&gt;
+                &lt;/select&gt;
+            &lt;/div&gt;
+            &lt;div&gt;
+                &lt;label class="block text-sm font-medium text-gray-700 mb-1"&gt;姓名&lt;/label&gt;
+                &lt;select id="nameSelect" class="w-full border-gray-300 rounded-lg shadow-sm p-2.5 bg-gray-50 border outline-none focus:ring-2 focus:ring-blue-500" disabled&gt;
+                    &lt;option value=""&gt;請先選擇班級&lt;/option&gt;
+                &lt;/select&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Questions Container --&gt;
+    &lt;div id="questionsContainer" class="space-y-6 mb-6"&gt;
+        &lt;!-- 動態產生題目 --&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Handwriting Canvas Section --&gt;
+    &lt;div class="bg-white rounded-2xl shadow-sm p-6 mb-6 hidden" id="canvasSection"&gt;
+        &lt;div class="flex justify-between items-center mb-4"&gt;
+            &lt;h3 class="text-lg font-bold text-gray-800"&gt;✍️ 手寫作答區&lt;/h3&gt;
+            &lt;button type="button" onclick="clearCanvas()" class="text-sm text-red-500 hover:text-red-700 font-medium px-3 py-1 rounded bg-red-50"&gt;清除畫布&lt;/button&gt;
+        &lt;/div&gt;
+        &lt;div class="border-2 border-dashed border-gray-300 rounded-xl overflow-hidden bg-gray-50"&gt;
+            &lt;!-- 畫布設定固定比例 --&gt;
+            &lt;canvas id="handwritingCanvas" width="800" height="400" class="w-full h-auto cursor-crosshair"&gt;&lt;/canvas&gt;
+        &lt;/div&gt;
+        &lt;p class="text-xs text-gray-400 mt-2"&gt;請直接在上方空白處使用滑鼠或手指書寫/畫圖。&lt;/p&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Action Buttons --&gt;
+    &lt;div class="flex flex-col sm:flex-row gap-4 mb-8"&gt;
+        &lt;button id="submitBtn" onclick="submitExam()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl shadow-md transition duration-200 flex justify-center items-center"&gt;
+            &lt;span id="submitText"&gt;繳交考卷&lt;/span&gt;
+            &lt;div id="submitLoader" class="spinner w-5 h-5 ml-2 hidden"&gt;&lt;/div&gt;
+        &lt;/button&gt;
+        &lt;button id="feedbackBtn" onclick="viewFeedback()" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-6 rounded-xl shadow-md transition duration-200 flex justify-center items-center"&gt;
+            &lt;span id="feedbackText"&gt;觀看教師回饋&lt;/span&gt;
+            &lt;div id="feedbackLoader" class="spinner w-5 h-5 ml-2 hidden"&gt;&lt;/div&gt;
+        &lt;/button&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Feedback Result Modal/Section --&gt;
+    &lt;div id="feedbackResult" class="bg-emerald-50 border-l-4 border-emerald-500 rounded-r-xl shadow-sm p-6 mb-6 hidden"&gt;
+        &lt;h3 class="text-lg font-bold text-emerald-800 mb-4"&gt;👨‍🏫 教師回饋&lt;/h3&gt;
+        &lt;div id="feedbackContent" class="space-y-3"&gt;&lt;/div&gt;
+        &lt;button onclick="document.getElementById('feedbackResult').classList.add('hidden')" class="mt-4 text-sm text-emerald-600 font-medium hover:underline"&gt;關閉回饋&lt;/button&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+    /** --- 1. 系統變數與狀態 --- */
+    let globalData = { unitName: '', students: {}, questions: [] };
+    const canvas = document.getElementById('handwritingCanvas');
+    const ctx = canvas.getContext('2d');
+    let isDrawing = false;
+    let hasCanvasQuestion = false;
+
+    /** --- 2. 模擬 GAS 環境 (Local Mock API CRUD) --- */
+    const isLocal = typeof google === 'undefined';
+    const server = isLocal ? buildMockServer() : google.script.run;
+
+    function buildMockServer() {
+        console.log("【本地端預覽模式】啟動 Mock API");
+        return {
+            withSuccessHandler: function(callback) { this.callback = callback; return this; },
+            withFailureHandler: function(errCb) { this.errCb = errCb; return this; },
+            getInitialData: function() {
+                setTimeout(() =&gt; {
+                    this.callback({
+                        unitName: '第一次段考 (模擬環境)',
+                        classes: ['三年甲班', '三年乙班'],
+                        students: { '三年甲班': ['王小明', '陳小華'], '三年乙班': ['林小美'] },
+                        questions: [
+                            { id: 1, type: '選擇', content: '1+1等於多少？', options: ['1', '2', '3', '4'], answer: '2' },
+                            { id: 2, type: '選擇', content: '台灣首都在哪裡？', options: ['台北', '台中', '高雄'], answer: '台北' },
+                            { id: 3, type: '手寫', content: '請在下方畫布寫下你的座右銘：', options: [], answer: '' }
+                        ]
+                    });
+                }, 800);
+            },
+            submitExam: function(data) {
+                setTimeout(() =&gt; { this.callback({ success: true, score: data.score, message: `(模擬) 繳交成功！得分：${data.score}` }); }, 1200);
+            },
+            getFeedback: function(data) {
+                setTimeout(() =&gt; {
+                    this.callback({
+                        success: true,
+                        text: '表現非常好！邏輯清晰。',
+                        link: 'https://zh.wikipedia.org/wiki/HTML',
+                        file: 'https://picsum.photos/300' // Mock image link
+                    });
+                }, 800);
+            }
+        };
+    }
+
+    /** --- 3. 畫面初始化邏輯 --- */
+    window.onload = () =&gt; {
+        setupCanvasEvents();
+        server.withSuccessHandler(initApp)
+              .withFailureHandler(err =&gt; alert("載入失敗：" + err))
+              .getInitialData();
+    };
+
+    function initApp(data) {
+        globalData = data;
+        document.getElementById('uiUnitName').innerText = data.unitName;
+        
+        // 綁定班級下拉選單
+        const classSelect = document.getElementById('classSelect');
+        data.classes.forEach(cls =&gt; {
+            let opt = document.createElement('option');
+            opt.value = cls; opt.innerText = cls;
+            classSelect.appendChild(opt);
+        });
+
+        classSelect.addEventListener('change', (e) =&gt; {
+            const nameSelect = document.getElementById('nameSelect');
+            nameSelect.innerHTML = '&lt;option value=""&gt;請選擇姓名&lt;/option&gt;';
+            if(e.target.value) {
+                nameSelect.disabled = false;
+                data.students[e.target.value].forEach(name =&gt; {
+                    let opt = document.createElement('option');
+                    opt.value = name; opt.innerText = name;
+                    nameSelect.appendChild(opt);
+                });
+            } else {
+                nameSelect.disabled = true;
+            }
+        });
+
+        // 渲染題目
+        renderQuestions();
+    }
+
+    function renderQuestions() {
+        const container = document.getElementById('questionsContainer');
+        container.innerHTML = '';
+        hasCanvasQuestion = false;
+
+        globalData.questions.forEach((q, index) =&gt; {
+            if (q.type === '手寫') hasCanvasQuestion = true;
+            
+            let html = `
+                &lt;div class="bg-white rounded-2xl shadow-sm p-6" data-qid="${q.id}"&gt;
+                    &lt;h3 class="text-lg font-semibold text-gray-800 mb-3"&gt;
+                        &lt;span class="bg-blue-100 text-blue-700 text-sm py-1 px-2 rounded mr-2"&gt;Q${index + 1}&lt;/span&gt;
+                        ${q.content}
+                    &lt;/h3&gt;`;
+            
+            if (q.type === '選擇') {
+                html += `&lt;div class="space-y-2 mt-4 pl-2"&gt;`;
+                q.options.forEach((opt, optIndex) =&gt; {
+                    html += `
+                        &lt;label class="flex items-center space-x-3 cursor-pointer p-2 rounded hover:bg-blue-50 transition"&gt;
+                            &lt;input type="radio" name="q_${q.id}" value="${opt}" class="form-radio h-5 w-5 text-blue-600 focus:ring-blue-500"&gt;
+                            &lt;span class="text-gray-700"&gt;${opt}&lt;/span&gt;
+                        &lt;/label&gt;`;
+                });
+                html += `&lt;/div&gt;`;
+            } else if (q.type === '手寫') {
+                html += `&lt;p class="text-sm text-gray-500 mt-2"&gt;👉 請在下方的手寫區作答。&lt;/p&gt;`;
+            }
+            html += `&lt;/div&gt;`;
+            container.innerHTML += html;
+        });
+
+        // 若有手寫題，顯示畫布
+        if (hasCanvasQuestion) document.getElementById('canvasSection').classList.remove('hidden');
+    }
+
+    /** --- 4. 畫布 (Canvas) 邏輯 --- */
+    function setupCanvasEvents() {
+        ctx.lineWidth = 4;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = '#1e3a8a'; // 深藍色筆跡
+
+        const getPos = (e) =&gt; {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            // 計算比例以適應 RWD 縮放
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
+        };
+
+        const startDraw = (e) =&gt; {
+            if (e.cancelable) e.preventDefault(); // 避免手機滑動
+            isDrawing = true;
+            const pos = getPos(e);
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+        };
+
+        const draw = (e) =&gt; {
+            if (!isDrawing) return;
+            if (e.cancelable) e.preventDefault();
+            const pos = getPos(e);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+        };
+
+        const stopDraw = () =&gt; { isDrawing = false; ctx.closePath(); };
+
+        canvas.addEventListener('mousedown', startDraw);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDraw);
+        canvas.addEventListener('mouseout', stopDraw);
+        
+        canvas.addEventListener('touchstart', startDraw, { passive: false });
+        canvas.addEventListener('touchmove', draw, { passive: false });
+        canvas.addEventListener('touchend', stopDraw);
+    }
+
+    function clearCanvas() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function isCanvasBlank() {
+        const blank = document.createElement('canvas');
+        blank.width = canvas.width;
+        blank.height = canvas.height;
+        return canvas.toDataURL() === blank.toDataURL();
+    }
+
+    /** --- 5. 繳交考卷邏輯 --- */
+    function submitExam() {
+        const className = document.getElementById('classSelect').value;
+        const studentName = document.getElementById('nameSelect').value;
+
+        if (!className || !studentName) return alert("請選擇班級與姓名！");
+
+        let score = 0;
+        let answers = [];
+        
+        // 批改選擇題並收集答案
+        for (let q of globalData.questions) {
+            if (q.type === '選擇') {
+                const selected = document.querySelector(`input[name="q_${q.id}"]:checked`);
+                const val = selected ? selected.value : '';
+                answers.push(val);
+                if (val === q.answer) {
+                    score += (100 / globalData.questions.filter(qt =&gt; qt.type === '選擇').length); 
+                }
+            } else {
+                answers.push("見手寫附件");
+            }
+        }
+
+        // 檢查手寫題
+        let canvasBase64 = "";
+        if (hasCanvasQuestion) {
+            if (isCanvasBlank() &amp;&amp; !confirm("您的手寫區是空白的，確定要直接繳交嗎？")) return;
+            canvasBase64 = canvas.toDataURL("image/png");
+        }
+
+        // 建立傳送資料
+        const payload = {
+            unitName: globalData.unitName,
+            className, studentName, 
+            score: Math.round(score), 
+            answers, 
+            canvasBase64
+        };
+
+        // UI 狀態：載入中
+        const btn = document.getElementById('submitBtn');
+        const loader = document.getElementById('submitLoader');
+        const text = document.getElementById('submitText');
+        btn.disabled = true; loader.classList.remove('hidden'); text.innerText = '繳交中...';
+
+        server.withSuccessHandler(res =&gt; {
+            alert(res.message);
+            btn.disabled = false; loader.classList.add('hidden'); text.innerText = '繳交考卷';
+        }).withFailureHandler(err =&gt; {
+            alert("繳交失敗：" + err);
+            btn.disabled = false; loader.classList.add('hidden'); text.innerText = '繳交考卷';
+        }).submitExam(payload);
+    }
+
+    /** --- 6. 觀看教師回饋邏輯 --- */
+    function viewFeedback() {
+        const className = document.getElementById('classSelect').value;
+        const studentName = document.getElementById('nameSelect').value;
+        
+        if (!className || !studentName) return alert("請先選擇班級與姓名，才能查詢回饋！");
+
+        // UI 狀態：載入中
+        const btn = document.getElementById('feedbackBtn');
+        const loader = document.getElementById('feedbackLoader');
+        btn.disabled = true; loader.classList.remove('hidden');
+
+        server.withSuccessHandler(res =&gt; {
+            btn.disabled = false; loader.classList.add('hidden');
+            const resultBox = document.getElementById('feedbackResult');
+            const contentBox = document.getElementById('feedbackContent');
+            contentBox.innerHTML = '';
+
+            if (!res.success) {
+                contentBox.innerHTML = `&lt;p class="text-gray-600"&gt;${res.error}&lt;/p&gt;`;
+            } else {
+                if(res.text) contentBox.innerHTML += `&lt;p class="text-gray-800 bg-white p-3 rounded shadow-sm"&gt;📝 &lt;strong&gt;評語：&lt;/strong&gt;&lt;br&gt;${res.text}&lt;/p&gt;`;
+                if(res.link) contentBox.innerHTML += `&lt;a href="${res.link}" target="_blank" class="block text-blue-600 hover:underline"&gt;🔗 參考連結&lt;/a&gt;`;
+                
+                // 判斷是否為圖檔 (簡易判斷副檔名或外部圖床)
+                if(res.file) {
+                    if (res.file.match(/\.(jpeg|jpg|gif|png)$/) || res.file.includes('picsum')) {
+                        contentBox.innerHTML += `&lt;div class="mt-2"&gt;&lt;strong class="block text-gray-700 text-sm mb-1"&gt;🖼️ 教師回傳圖片：&lt;/strong&gt;&lt;img src="${res.file}" class="max-w-full rounded shadow border"&gt;&lt;/div&gt;`;
+                    } else {
+                        contentBox.innerHTML += `&lt;a href="${res.file}" target="_blank" class="block text-purple-600 hover:underline mt-2"&gt;📎 附件檔案下載&lt;/a&gt;`;
+                    }
+                }
+
+                if(!res.text &amp;&amp; !res.link &amp;&amp; !res.file) {
+                    contentBox.innerHTML = `&lt;p class="text-gray-500"&gt;教師已閱卷，但沒有留下回饋文字。&lt;/p&gt;`;
+                }
+            }
+            resultBox.classList.remove('hidden');
+        }).withFailureHandler(err =&gt; {
+            btn.disabled = false; loader.classList.add('hidden');
+            alert("查詢失敗：" + err);
+        }).getFeedback({ unitName: globalData.unitName, className, studentName });
+    }
+&lt;/script&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- 步驟五 -->
+          <div class="border-l-4 border-purple-400 pl-4 bg-purple-50/50 p-4 rounded-r-xl">
+            <h3 class="text-lg font-bold text-slate-800 mb-2">步驟五：發布部署</h3>
+            <ul class="list-decimal list-inside text-slate-700 space-y-2">
+              <li>點擊右上角「部署」 ➔ 「新增部署」。</li>
+              <li>類型選擇「網頁應用程式」。</li>
+              <li>執行身分選「我」，權限選「所有人」。</li>
+              <li>部署完成後，去試算表後台看看：<br><span class="text-purple-700 font-bold ml-6 mt-1 block">✨ 您會發現「題庫、名單、考試分頁」已經被系統通通變出來了！學生在前台繳交後，成績也會自動進來！</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 分頁 4 內容 -->
+    <div id="tab4" class="tab-content hidden fade-in space-y-8">
+      
+      <!-- LINE Bot 體驗區 (置頂醒目框) -->
+      <div class="bg-gradient-to-br from-green-50 to-emerald-100 rounded-2xl shadow-md p-6 md:p-8 border-2 border-green-400 relative overflow-hidden">
+        <!-- 裝飾用背景圖案 -->
+        <div class="absolute -right-4 -top-4 opacity-10 text-9xl pointer-events-none">💬</div>
+        
+        <h2 class="text-2xl font-black text-green-800 mb-5 flex items-center gap-2 relative z-10">
+          <span class="text-3xl">🤖</span> LINE 連動實戰體驗機器人
+        </h2>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6 relative z-10">
+          <a href="https://line.me/R/ti/p/@924syjgk" target="_blank" rel="noopener noreferrer" class="bg-[#06C755] hover:bg-[#05b34c] text-white font-bold py-3 px-4 rounded-xl shadow-lg transform transition hover:-translate-y-1 flex items-center justify-center gap-3">
+            <span class="bg-white text-[#06C755] rounded-full w-6 h-6 flex items-center justify-center text-sm shrink-0">1</span>
+            <span class="truncate">英文單字練習 1號機</span>
+          </a>
+          <a href="https://lin.ee/wptL7L3" target="_blank" rel="noopener noreferrer" class="bg-[#06C755] hover:bg-[#05b34c] text-white font-bold py-3 px-4 rounded-xl shadow-lg transform transition hover:-translate-y-1 flex items-center justify-center gap-3">
+            <span class="bg-white text-[#06C755] rounded-full w-6 h-6 flex items-center justify-center text-sm shrink-0">2</span>
+            <span class="truncate">英文單字練習 2號機</span>
+          </a>
+          <a href="https://lin.ee/YPJz9Qu" target="_blank" rel="noopener noreferrer" class="bg-[#06C755] hover:bg-[#05b34c] text-white font-bold py-3 px-4 rounded-xl shadow-lg transform transition hover:-translate-y-1 flex items-center justify-center gap-3">
+            <span class="bg-white text-[#06C755] rounded-full w-6 h-6 flex items-center justify-center text-sm shrink-0">❤️</span>
+            <span class="truncate">各種三角形面積求法</span>
+          </a>
+        </div>
+
+        <div class="bg-white/80 backdrop-blur rounded-xl p-5 border border-green-200 relative z-10">
+          <h3 class="font-bold text-green-800 mb-3 border-b border-green-200 pb-2 flex items-center gap-2">
+            <span>💡</span> 操作說明：
+          </h3>
+          <ul class="space-y-3 text-green-900 font-medium">
+            <li class="flex items-start gap-2">
+              <span class="text-green-600 mt-0.5">▶</span>
+              <p>輸入 <strong class="bg-green-200 px-2 py-0.5 rounded text-green-800 border border-green-300">座號</strong> 會開始五題英文單字測驗，啟動第二輪時會根據上一輪的錯題來提供練習。</p>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-green-600 mt-0.5">▶</span>
+              <p>輸入 <strong class="bg-green-200 px-2 py-0.5 rounded text-green-800 border border-green-300">『成績』</strong> 會顯示練習的天數和常錯的單字。</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 前言與邏輯說明 -->
+      <div class="bg-white rounded-2xl shadow-sm p-6 md:p-8 border-l-4 border-orange-500">
+        <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-4 mb-4">
+          <h2 class="text-xl font-bold text-slate-800">為什麼要連動 LINE？</h2>
+          <div class="flex flex-wrap gap-3">
+            <a href="https://share.gemini.google/POsYDDPfQpIi" target="_blank" rel="noopener noreferrer" class="shrink-0 whitespace-nowrap bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-2 px-6 rounded-full shadow-lg transform transition hover:-translate-y-1 flex items-center justify-center gap-2">
+              ✨ 詳細指南請點我
+            </a>
+          </div>
+        </div>
+        <p class="text-lg leading-relaxed text-slate-700 mb-8">
+          在校務或行政日常中，我們不可能隨時盯著 Google 試算表看有沒有新資料進來。透過將 GAS 與台灣人最常用的 <strong>LINE</strong> 結合，只要有人提交前端表單（例如：學生請假、公物報修、午餐登記），系統就會立刻推播訊息到您的手機或專屬的行政群組！<br><strong class="text-orange-600">這不僅能做到「零時差」的管理，還能大幅降低資訊漏接的風險，讓您的系統服務升級到完美。</strong>
+        </p>
+        
+        <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+          <span class="text-2xl">⚙️</span> 連動 GAS 和 LINE 的重要節點
+        </h3>
+        <div class="bg-orange-50 p-6 rounded-xl border border-orange-100">
+          <ul class="space-y-6 text-slate-700 text-lg">
+            <li class="flex gap-4">
+              <span class="bg-orange-500 text-white font-bold rounded-full w-8 h-8 flex items-center justify-center shrink-0 mt-0.5">1</span>
+              <div>
+                <strong class="text-slate-800 block mb-1">取得專屬通行證 (Token)</strong>
+                前往 LINE 官方後台申請一個 Token，這就像是一把專屬鑰匙，賦予您的程式「發送訊息到特定聊天室」的合法權限。
+              </div>
+            </li>
+            <li class="flex gap-4">
+              <span class="bg-orange-500 text-white font-bold rounded-full w-8 h-8 flex items-center justify-center shrink-0 mt-0.5">2</span>
+              <div>
+                <strong class="text-slate-800 block mb-1">大腦誕生 (部署 GAS)</strong>
+                將這把 Token 鑰匙放進 GAS 程式碼中並「發布部署」，您會獲得一串專屬的網址。這串網址就像是您在雲端建立的「智慧收發室」。
+              </div>
+            </li>
+            <li class="flex gap-4">
+              <span class="bg-orange-500 text-white font-bold rounded-full w-8 h-8 flex items-center justify-center shrink-0 mt-0.5">3</span>
+              <div>
+                <strong class="text-slate-800 block mb-1">建立通訊橋樑 (填寫 Webhook)</strong>
+                進入 LINE 的開發者後台，找到 <strong class="text-orange-600">Webhook URL</strong> 欄位，把剛剛取得的 GAS 網址貼上去。
+                <br><span class="text-sm text-gray-500 mt-1 inline-block">💡 <strong class="text-orange-600">意義：</strong>這就等於告訴 LINE：「嘿！以後只要有新資料進來，請立刻送到這個網址，交給我的 GAS 大腦處理並發送通知！」</span>
+              </div>
+            </li>
+            <li class="flex gap-4">
+              <span class="bg-orange-500 text-white font-bold rounded-full w-8 h-8 flex items-center justify-center shrink-0 mt-0.5">4</span>
+              <div>
+                <strong class="text-slate-800 block mb-1">達成零時差推播</strong>
+                橋樑接通後！只要家長或學生在前台按下「送出表單」，GAS 就會自動透過這條專屬通道，將整理好的通知瞬間推播到您的 LINE 手機裡。
+              </div>
+            </li>
+          </ul>
+          
+          <!-- LINE 連動概念教學圖片 -->
+          <div class="mt-8 relative inline-block group text-center w-full">
+            <div class="bg-white p-2 rounded-xl border border-orange-200 shadow-sm inline-block">
+              <img src="https://i.meee.com.tw/xijbr5Y.png" alt="LINE 連動概念圖示" class="max-w-full rounded-lg cursor-pointer transition-opacity hover:opacity-95" style="max-height: 400px;" onclick="openLightbox(this.src)">
+            </div>
+            <button onclick="openLightbox('https://i.meee.com.tw/xijbr5Y.png')" class="absolute bottom-4 right-1/2 translate-x-1/2 bg-slate-800/80 hover:bg-slate-900 text-white text-sm py-1.5 px-3 rounded-full shadow-lg backdrop-blur-sm flex items-center gap-1 transition-transform hover:scale-105">
+              🔍 放大
+            </button>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- 頁尾版權宣告 -->
+  <footer class="bg-slate-200 text-slate-600 py-8 mt-auto text-center text-sm border-t border-slate-300">
+    <div class="max-w-6xl mx-auto px-4 flex flex-col items-center gap-3">
+      <img src="https://i.meee.com.tw/nDm9WiU.png" alt="優履團隊 Logo" class="h-10 object-contain mix-blend-multiply opacity-80 hover:opacity-100 transition-opacity">
+      <p class="font-bold text-slate-700 text-base">&copy; 2026 優履團隊研發. All rights reserved.</p>
+      <p class="text-slate-500">版權所有，教學使用請引註出處。</p>
+    </div>
+  </footer>
+
+  <!-- 圖片放大預覽 (Lightbox) -->
+  <div id="lightbox" class="fixed inset-0 bg-slate-900/90 z-[100] hidden flex-col justify-center items-center p-4 md:p-8 opacity-0 transition-opacity duration-300" onclick="closeLightbox()">
+    <button onclick="closeLightbox()" class="absolute top-4 right-4 md:top-8 md:right-8 text-white/70 hover:text-white p-2 text-5xl leading-none transition-colors cursor-pointer">&times;</button>
+    <img id="lightbox-img" src="" alt="Zoomed Image" class="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl scale-95 transition-transform duration-300" onclick="event.stopPropagation()">
+  </div>
+
+  <script>
+    // 圖片放大功能 (Lightbox)
+    function openLightbox(src) {
+      const lightbox = document.getElementById('lightbox');
+      const img = document.getElementById('lightbox-img');
+      img.src = src;
+      
+      lightbox.classList.remove('hidden');
+      lightbox.classList.add('flex');
+      
+      // 強制觸發重繪以播放過渡動畫
+      void lightbox.offsetWidth; 
+      
+      lightbox.classList.remove('opacity-0');
+      img.classList.remove('scale-95');
+      img.classList.add('scale-100');
+    }
+
+    function closeLightbox() {
+      const lightbox = document.getElementById('lightbox');
+      const img = document.getElementById('lightbox-img');
+      
+      lightbox.classList.add('opacity-0');
+      img.classList.remove('scale-100');
+      img.classList.add('scale-95');
+      
+      setTimeout(() => {
+        lightbox.classList.add('hidden');
+        lightbox.classList.remove('flex');
+      }, 300); // 等待淡出動畫結束
+    }
+
+    // 展開/收合程式碼區塊
+    function toggleCode(containerId) {
+      const container = document.getElementById(containerId);
+      if (container.classList.contains('hidden')) {
+        container.classList.remove('hidden');
+      } else {
+        container.classList.add('hidden');
+      }
+    }
+
+    // 切換分頁邏輯
+    function switchTab(tabId, btnElement) {
+      // 隱藏所有內容
+      document.querySelectorAll('.tab-content').forEach(el => {
+        el.classList.add('hidden');
+      });
+      // 移除所有按鈕的 active 狀態
+      document.querySelectorAll('.tab-btn').forEach(el => {
+        el.classList.remove('ring-4', 'ring-offset-2', 'active', 'ring-blue-300', 'ring-emerald-300', 'ring-purple-300', 'ring-orange-300');
+      });
+      
+      // 顯示目標內容
+      document.getElementById(tabId).classList.remove('hidden');
+      
+      // 設定當前按鈕的 active 狀態 (根據不同顏色給予不同的 ring color)
+      btnElement.classList.add('active', 'ring-4', 'ring-offset-2');
+      if(tabId === 'tab1') btnElement.classList.add('ring-blue-300');
+      if(tabId === 'tab2') btnElement.classList.add('ring-emerald-300');
+      if(tabId === 'tab3') btnElement.classList.add('ring-purple-300');
+      if(tabId === 'tab4') btnElement.classList.add('ring-orange-300');
+    }
+
+    // 複製文字功能 (相容 iFrame)
+    function copyText(elementId, btnId) {
+      const text = document.getElementById(elementId).innerText;
+      
+      // 建立暫存的 textarea 來執行複製指令
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      
+      try {
+        document.execCommand('copy');
+        
+        // 變更按鈕狀態為成功
+        const btn = document.getElementById(btnId);
+        const originalText = btn.innerHTML;
+        btn.innerHTML = "✅ 已複製！";
+        btn.classList.add("bg-green-600", "text-white");
+        btn.classList.remove("bg-slate-600", "text-slate-300");
+        
+        // 2秒後恢復原狀
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+          btn.classList.remove("bg-green-600", "text-white");
+          if(btnId === 'btn-prompt') {
+            btn.classList.add("bg-slate-600");
+          } else {
+            btn.classList.add("text-slate-300", "bg-slate-700");
+          }
+        }, 2000);
+        
+      } catch (err) {
+        alert("複製失敗，請手動選取複製！");
+      }
+      
+      document.body.removeChild(textArea);
+    }
+  </script>
+</body>
+</html>
